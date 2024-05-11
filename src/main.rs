@@ -9,9 +9,9 @@ struct Player {
 }
 
 fn main() -> Result<(), Error> {
-    let filename = "players.txt";
+    const FILE_NAME: &str = "players.txt";
 
-    let players = read_lines(filename).unwrap();
+    let players = read_lines(FILE_NAME).unwrap();
 
     loop {
         println!("Please input player name.");
