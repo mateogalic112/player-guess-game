@@ -27,7 +27,7 @@ fn main() {
 
         match found_player {
             Some(player) => {
-                println!("Player found: {:?}", player);
+                println!("Player {} ({}) plays for {}", player.name, player.age, player.club);
                 break;
             }
             None => println!("Player not found, try again: "),
