@@ -8,6 +8,12 @@ struct Player {
     club: String,
 }
 
+impl Player {
+    fn player_info(&self) -> String {
+        format!("Player {} ({}) plays for {}", self.name, self.age, self.club)
+    }
+}
+
 fn main() {
     const FILE_NAME: &str = "players.txt";
 
@@ -27,7 +33,7 @@ fn main() {
 
         match found_player {
             Some(player) => {
-                println!("Player {} ({}) plays for {}", player.name, player.age, player.club);
+                println!("{}", player.player_info());
                 break;
             }
             None => println!("Player not found, try again: "),
