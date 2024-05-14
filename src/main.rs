@@ -2,15 +2,24 @@ use std::fs::read_to_string;
 use std::io::{self, Error};
 
 #[derive(Debug)]
+enum Position {
+    Goalkeeper,
+    Defender,
+    Midfielder,
+    Forward,
+}
+
+#[derive(Debug)]
 struct Player {
     name: String,
     age: u8,
+    position: Position,
     club: String,
 }
 
 impl Player {
     fn player_info(&self) -> String {
-        format!("Player {} ({}) plays for {}", self.name, self.age, self.club)
+        format!("Player {} ({}, {:?}) plays for {}", self.name, self.age, self.position, self.club)
     }
 
     fn is_older(&self, other: &Player) -> bool {
@@ -30,6 +39,7 @@ fn main() {
         io::stdin()
             .read_line(&mut player_name_guess)
             .expect("Failed to read line");
+
 
         let found_player = players
             .iter()
@@ -57,15 +67,24 @@ fn main() {
 fn parse_player_line(line: &str) -> Option<Player> {
     let parts: Vec<&str> = line.split(" - ").collect();
 
-    if parts.len() != 3 {
+    if parts.len() != 4 {
         return None;
     }
 
     let name = parts[0].trim().to_string();
     let age = parts[1].trim().parse::<u8>().unwrap();
-    let club = parts[2].trim().to_string();
 
-    Some(Player { name, age, club })
+    let position: Position = match parts[2].trim() {
+        "GK" => Position::Goalkeeper,
+        "CB" => Position::Defender,
+        "CM" => Position::Midfielder,
+        "CF" => Position::Forward,
+        _ => return None,
+    };
+
+    let club = parts[3].trim().to_string();
+
+    Some(Player { name, age, position, club })
 }
 
 fn read_lines(filename: &str) -> Result<Vec<Player>, Error> {

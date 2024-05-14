@@ -1,4 +1,3 @@
-Cristiano Ronaldo - 30 - Real Madrid
-Lionel Messi - 25 - Barcelona
-Karim Benzema - 24 - Real Madrid
-Luka Modric - 39 - Real Madrid
+Cristiano Ronaldo - 30 - CF - Real Madrid
+Lionel Messi - 25 - CF - Barcelona
+Luka Modric - 39 - CM - Real Madrid
