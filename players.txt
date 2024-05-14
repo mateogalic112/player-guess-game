@@ -1,10 +1,4 @@
 Cristiano Ronaldo - 30 - Real Madrid
 Lionel Messi - 25 - Barcelona
 Karim Benzema - 24 - Real Madrid
-Luka Modric - 29 - Real Madrid
-Oscar - 20 - Chelsea
-Hulk - 21 - Chelsea
-Aleksandar Kolarov - 30 - Lazio
-Edin Dzeko - 25 - Man City
-Carlos Tevez - 24 - Man City
-Neymar Jr. - 19 - Barcelona
+Luka Modric - 39 - Real Madrid

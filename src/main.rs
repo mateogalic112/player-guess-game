@@ -12,6 +12,10 @@ impl Player {
     fn player_info(&self) -> String {
         format!("Player {} ({}) plays for {}", self.name, self.age, self.club)
     }
+
+    fn is_older(&self, other: &Player) -> bool {
+        self.age > other.age
+    }
 }
 
 fn main() {
@@ -33,6 +37,15 @@ fn main() {
 
         match found_player {
             Some(player) => {
+                let is_oldest = players
+                    .iter()
+                    .filter(|other| other.name != player.name)
+                    .all(|other| player.is_older(other));
+
+                if is_oldest {
+                    println!("{} is the oldest player in the squad.", player.name);
+                }
+
                 println!("{}", player.player_info());
                 break;
             }
@@ -58,7 +71,10 @@ fn parse_player_line(line: &str) -> Option<Player> {
 fn read_lines(filename: &str) -> Result<Vec<Player>, Error> {
     let content = read_to_string(filename)?;
 
-    let players: Vec<Player> = content.lines().filter_map(parse_player_line).collect();
+    let players: Vec<Player> = content
+        .lines()
+        .filter_map(parse_player_line)
+        .collect();
 
     Ok(players)
 }
