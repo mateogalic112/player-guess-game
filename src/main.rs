@@ -76,9 +76,9 @@ fn parse_player_line(line: &str) -> Option<Player> {
 
     let position: Position = match parts[2].trim() {
         "GK" => Position::Goalkeeper,
-        "CB" => Position::Defender,
-        "CM" => Position::Midfielder,
-        "CF" => Position::Forward,
+        "CB" | "DL" | "DR" => Position::Defender,
+        "CM" | "DM" => Position::Midfielder,
+        "CF" | "ST" => Position::Forward,
         _ => return None,
     };
 
