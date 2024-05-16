@@ -15,11 +15,12 @@ struct Player {
     age: u8,
     position: Position,
     club: String,
+    market_value: u8,
 }
 
 impl Player {
     fn player_info(&self) -> String {
-        format!("Player {} ({}, {:?}) plays for {}", self.name, self.age, self.position, self.club)
+        format!("Player {} ({}, {:?}) plays for {}. Valued at: {} million.", self.name, self.age, self.position, self.club, self.market_value)
     }
 
     fn is_older(&self, other: &Player) -> bool {
@@ -67,7 +68,7 @@ fn main() {
 fn parse_player_line(line: &str) -> Option<Player> {
     let parts: Vec<&str> = line.split(" - ").collect();
 
-    if parts.len() != 4 {
+    if parts.len() != 5 {
         return None;
     }
 
@@ -84,7 +85,13 @@ fn parse_player_line(line: &str) -> Option<Player> {
 
     let club = parts[3].trim().to_string();
 
-    Some(Player { name, age, position, club })
+    let market_value = parts[4].trim().parse::<u8>();
+    let market_value: u8 = match market_value {
+        Ok(value) => value,
+        Err(_) => 0,
+    };
+
+    Some(Player { name, age, position, club, market_value })
 }
 
 fn read_lines(filename: &str) -> Result<Vec<Player>, Error> {
