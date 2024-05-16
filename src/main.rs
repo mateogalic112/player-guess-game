@@ -41,20 +41,14 @@ fn main() {
             .read_line(&mut player_name_guess)
             .expect("Failed to read line");
 
-
-        let found_player = players
-            .iter()
-            .find(|player| player.name.to_lowercase() == player_name_guess.to_lowercase().trim());
-
-        match found_player {
+        match find_player_by_name(&players, player_name_guess) {
             Some(player) => {
-                let is_oldest = players
-                    .iter()
-                    .filter(|other| other.name != player.name)
-                    .all(|other| player.is_older(other));
+                if is_oldest(&players, player) {
+                    println!("{} is the oldest player in the squad - {} years old.", player.name, player.age);
+                }
 
-                if is_oldest {
-                    println!("{} is the oldest player in the squad.", player.name);
+                if is_most_valued(&players, player) {
+                    println!("{} is the most valued player in the squad - {} million.", player.name, player.market_value);
                 }
 
                 println!("{}", player.player_info());
@@ -63,6 +57,27 @@ fn main() {
             None => println!("Player not found, try again: "),
         }
     }
+}
+
+
+fn find_player_by_name(players: &Vec<Player>, player_name_guess: String) -> Option<&Player> {
+    players
+    .iter()
+    .find(|player| player.name.to_lowercase() == player_name_guess.to_lowercase().trim())
+}
+
+fn is_oldest(players: &Vec<Player>, player: &Player) -> bool {
+    players
+        .iter()
+        .filter(|other| other.name != player.name)
+        .all(|other| player.is_older(other))
+}
+
+fn is_most_valued(players: &Vec<Player>, player: &Player) -> bool {
+    players
+        .iter()
+        .filter(|other| other.name != player.name)
+        .all(|other| player.market_value > other.market_value)
 }
 
 fn parse_player_line(line: &str) -> Option<Player> {
