@@ -88,7 +88,13 @@ fn parse_player_line(line: &str) -> Option<Player> {
     }
 
     let name = parts[0].trim().to_string();
-    let age = parts[1].trim().parse::<u8>().unwrap();
+
+    let age = parts[1].trim().parse::<u8>();
+    let age = match age {
+        Ok(value) => value,
+        Err(_) => 0,
+    };
+    
 
     let position: Position = match parts[2].trim() {
         "GK" => Position::Goalkeeper,
