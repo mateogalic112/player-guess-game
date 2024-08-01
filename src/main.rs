@@ -20,7 +20,10 @@ struct Player {
 
 impl Player {
     fn player_info(&self) -> String {
-        format!("Player {} ({}, {:?}) plays for {}. Valued at: {} million.", self.name, self.age, self.position, self.club, self.market_value)
+        format!(
+            "Player {} ({}, {:?}) plays for {}. Valued at: {} million.",
+            self.name, self.age, self.position, self.club, self.market_value
+        )
     }
 
     fn is_older(&self, other: &Player) -> bool {
@@ -44,11 +47,17 @@ fn main() {
         match find_player_by_name(&players, player_name_guess) {
             Some(player) => {
                 if is_oldest(&players, player) {
-                    println!("{} is the oldest player in the squad - {} years old.", player.name, player.age);
+                    println!(
+                        "{} is the oldest player in the squad - {} years old.",
+                        player.name, player.age
+                    );
                 }
 
                 if is_most_valued(&players, player) {
-                    println!("{} is the most valued player in the squad - {} million.", player.name, player.market_value);
+                    println!(
+                        "{} is the most valued player in the squad - {} million.",
+                        player.name, player.market_value
+                    );
                 }
 
                 println!("{}", player.player_info());
@@ -59,11 +68,10 @@ fn main() {
     }
 }
 
-
 fn find_player_by_name(players: &Vec<Player>, player_name_guess: String) -> Option<&Player> {
     players
-    .iter()
-    .find(|player| player.name.to_lowercase() == player_name_guess.to_lowercase().trim())
+        .iter()
+        .find(|player| player.name.to_lowercase() == player_name_guess.to_lowercase().trim())
 }
 
 fn is_oldest(players: &Vec<Player>, player: &Player) -> bool {
@@ -94,7 +102,6 @@ fn parse_player_line(line: &str) -> Option<Player> {
         Ok(value) => value,
         Err(_) => 0,
     };
-    
 
     let position: Position = match parts[2].trim() {
         "GK" => Position::Goalkeeper,
@@ -112,16 +119,19 @@ fn parse_player_line(line: &str) -> Option<Player> {
         Err(_) => 0,
     };
 
-    Some(Player { name, age, position, club, market_value })
+    Some(Player {
+        name,
+        age,
+        position,
+        club,
+        market_value,
+    })
 }
 
 fn read_lines(filename: &str) -> Result<Vec<Player>, Error> {
     let content = read_to_string(filename)?;
 
-    let players: Vec<Player> = content
-        .lines()
-        .filter_map(parse_player_line)
-        .collect();
+    let players: Vec<Player> = content.lines().filter_map(parse_player_line).collect();
 
     Ok(players)
 }
