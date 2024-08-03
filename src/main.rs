@@ -15,6 +15,7 @@ fn main() {
         .collect();
 
     println!("Please input player name: ");
+
     loop {
         let mut player_name_guess: String = String::new();
 
@@ -22,7 +23,7 @@ fn main() {
             .read_line(&mut player_name_guess)
             .expect("Failed to read line");
 
-        match Player::find_player_by_name(&players, player_name_guess) {
+        match Player::find_player_by_name(&players, &player_name_guess) {
             Some(player) => {
                 if Player::is_oldest(&players, player) {
                     println!(
