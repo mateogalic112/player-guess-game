@@ -1,5 +1,5 @@
 use std::fs::read_to_string;
-use std::io::{self, Error};
+use std::io::{self};
 
 use crate::player::Player;
 pub mod player;
@@ -8,7 +8,11 @@ pub mod player;
 fn main() {
     const FILE_NAME: &str = "players.txt";
     // TODO error handling
-    let mut players = read_lines(FILE_NAME).unwrap();
+    let players: Vec<Player> = read_to_string(FILE_NAME)
+        .unwrap()
+        .lines()
+        .filter_map(Player::create_from_line)
+        .collect();
 
     println!("Please input player name: ");
     loop {
@@ -20,7 +24,6 @@ fn main() {
 
         match Player::find_player_by_name(&players, player_name_guess) {
             Some(player) => {
-                // Transfer plater to Chelsea
                 if Player::is_oldest(&players, player) {
                     println!(
                         "{} is the oldest player in the squad - {} years old.",
@@ -41,20 +44,4 @@ fn main() {
             None => println!("Player not found, try again: "),
         }
     }
-
-    // Transfer C. Ronaldo to Chelsea
-    if let Some(player) = players.first_mut() {
-        player.transfer(String::from("Chelsea"), 10);
-        println!("{}", player.player_info());
-    }
-}
-
-fn read_lines(filename: &str) -> Result<Vec<Player>, Error> {
-    let players: Vec<Player> = read_to_string(filename)
-        .unwrap()
-        .lines()
-        .filter_map(Player::create_from_line)
-        .collect();
-
-    Ok(players)
 }
