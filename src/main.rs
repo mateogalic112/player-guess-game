@@ -21,7 +21,7 @@ struct Player {
 impl Player {
     fn player_info(&self) -> String {
         format!(
-            "Player {} ({}, {:?}) plays for {}. Valued at: {} million.",
+            "Player {} ({}, {:?}) plays for {}. Valued at: {} mil.",
             self.name, self.age, self.position, self.club, self.market_value
         )
     }
@@ -29,12 +29,16 @@ impl Player {
     fn is_older(&self, other: &Player) -> bool {
         self.age > other.age
     }
+
+    fn transfer(&mut self, new_club: String, fee: u8) {
+        self.club = new_club;
+        self.market_value = fee;
+    }
 }
 
 fn main() {
     const FILE_NAME: &str = "players.txt";
-
-    let players = read_lines(FILE_NAME).unwrap();
+    let mut players = read_lines(FILE_NAME).unwrap();
 
     println!("Please input player name: ");
     loop {
@@ -66,6 +70,10 @@ fn main() {
             None => println!("Player not found, try again: "),
         }
     }
+
+    let player = players.first_mut().unwrap();
+    player.transfer(String::from("Chelsea"), 10);
+    println!("{}", player.player_info());
 }
 
 fn find_player_by_name(players: &Vec<Player>, player_name_guess: String) -> Option<&Player> {
