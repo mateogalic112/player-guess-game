@@ -1,40 +1,8 @@
 use std::fs::read_to_string;
 use std::io::{self, Error};
 
-#[derive(Debug)]
-enum Position {
-    Goalkeeper,
-    Defender,
-    Midfielder,
-    Forward,
-}
-
-#[derive(Debug)]
-struct Player {
-    name: String,
-    age: u8,
-    position: Position,
-    club: String,
-    market_value: u8,
-}
-
-impl Player {
-    fn player_info(&self) -> String {
-        format!(
-            "Player {} ({}, {:?}) plays for {}. Valued at: {} mil.",
-            self.name, self.age, self.position, self.club, self.market_value
-        )
-    }
-
-    fn is_older(&self, other: &Player) -> bool {
-        self.age > other.age
-    }
-
-    fn transfer(&mut self, new_club: String, fee: u8) {
-        self.club = new_club;
-        self.market_value = (self.market_value + fee) / 2;
-    }
-}
+use crate::player::{Player, Position};
+pub mod player;
 
 // TODO Extract modules
 fn main() {
