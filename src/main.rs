@@ -32,7 +32,7 @@ impl Player {
 
     fn transfer(&mut self, new_club: String, fee: u8) {
         self.club = new_club;
-        self.market_value = fee;
+        self.market_value = (self.market_value + fee) / 2;
     }
 }
 
