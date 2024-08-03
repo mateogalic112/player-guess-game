@@ -36,8 +36,10 @@ impl Player {
     }
 }
 
+// TODO Extract modules
 fn main() {
     const FILE_NAME: &str = "players.txt";
+    // TODO error handling
     let mut players = read_lines(FILE_NAME).unwrap();
 
     println!("Please input player name: ");
@@ -71,9 +73,11 @@ fn main() {
         }
     }
 
-    let player = players.first_mut().unwrap();
-    player.transfer(String::from("Chelsea"), 10);
-    println!("{}", player.player_info());
+    // Transfer C. Ronaldo to Chelsea
+    if let Some(player) = players.first_mut() {
+        player.transfer(String::from("Chelsea"), 10);
+        println!("{}", player.player_info());
+    }
 }
 
 fn find_player_by_name(players: &Vec<Player>, player_name_guess: String) -> Option<&Player> {
@@ -137,9 +141,11 @@ fn parse_player_line(line: &str) -> Option<Player> {
 }
 
 fn read_lines(filename: &str) -> Result<Vec<Player>, Error> {
-    let content = read_to_string(filename)?;
-
-    let players: Vec<Player> = content.lines().filter_map(parse_player_line).collect();
+    let players: Vec<Player> = read_to_string(filename)
+        .unwrap()
+        .lines()
+        .filter_map(parse_player_line)
+        .collect();
 
     Ok(players)
 }
