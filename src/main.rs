@@ -1,13 +1,11 @@
 use std::fs::read_to_string;
 use std::io::{self};
 
+mod player;
 use crate::player::Player;
-pub mod player;
 
-// TODO Extract modules
 fn main() {
     const FILE_NAME: &str = "players.txt";
-    // TODO error handling
     let players: Vec<Player> = read_to_string(FILE_NAME)
         .unwrap()
         .lines()
@@ -31,14 +29,12 @@ fn main() {
                         player.name, player.age
                     );
                 }
-
                 if Player::is_most_valued(&players, player) {
                     println!(
                         "{} is the most valued player in the squad - {} million.",
                         player.name, player.market_value
                     );
                 }
-
                 println!("{}", player.player_info());
                 break;
             }
