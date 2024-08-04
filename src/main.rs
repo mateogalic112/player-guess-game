@@ -6,13 +6,17 @@ use crate::player::Player;
 
 fn main() {
     const FILE_NAME: &str = "players.txt";
-    let players: Vec<Player> = read_to_string(FILE_NAME)
+    let mut players: Vec<Player> = read_to_string(FILE_NAME)
         .unwrap()
         .lines()
         .filter_map(Player::create_from_line)
         .collect();
 
     println!("Please input player name: ");
+
+    let transfer_player = &mut players.first_mut().unwrap();
+    transfer_player.transfer("Manchester United".to_string(), 50);
+    println!("{}", transfer_player.player_info());
 
     loop {
         let mut player_name_guess: String = String::new();
@@ -36,6 +40,7 @@ fn main() {
                     );
                 }
                 println!("{}", player.player_info());
+
                 break;
             }
             None => println!("Player not found, try again: "),
