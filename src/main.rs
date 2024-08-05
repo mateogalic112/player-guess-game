@@ -1,16 +1,17 @@
-use std::fs::read_to_string;
 use std::io::{self};
 
 mod player;
 use crate::player::{print_best_player_awards, Player};
 
+mod file_reader;
+use crate::file_reader::FileReader;
+
 fn main() {
-    const FILE_NAME: &str = "players.txt";
-    let mut players: Vec<Player> = read_to_string(FILE_NAME)
-        .unwrap()
-        .lines()
-        .filter_map(Player::create_from_line)
-        .collect();
+    let file_reader = FileReader {
+        filename: "players.txt".to_string(),
+    };
+
+    let mut players: Vec<Player> = file_reader.create_players();
 
     let transfer_player = &mut players.first_mut().unwrap();
     transfer_player.transfer("Manchester United".to_string(), 50);
