@@ -2,7 +2,7 @@ use std::fs::read_to_string;
 use std::io::{self};
 
 mod player;
-use crate::player::Player;
+use crate::player::{print_best_player_awards, Player};
 
 fn main() {
     const FILE_NAME: &str = "players.txt";
@@ -12,11 +12,11 @@ fn main() {
         .filter_map(Player::create_from_line)
         .collect();
 
-    println!("Please input player name: ");
-
     let transfer_player = &mut players.first_mut().unwrap();
     transfer_player.transfer("Manchester United".to_string(), 50);
     println!("{}", transfer_player.player_info());
+
+    println!("Please input player name: ");
 
     loop {
         let mut player_name_guess: String = String::new();
@@ -27,6 +27,8 @@ fn main() {
 
         match Player::find_player_by_name(&players, &player_name_guess) {
             Some(player) => {
+                println!("{}", player.player_info());
+
                 if Player::is_oldest(&players, player) {
                     println!(
                         "{} is the oldest player in the squad - {} years old.",
@@ -39,7 +41,8 @@ fn main() {
                         player.name, player.market_value
                     );
                 }
-                println!("{}", player.player_info());
+
+                print_best_player_awards(&player.name);
 
                 break;
             }

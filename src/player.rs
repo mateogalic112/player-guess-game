@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug)]
 pub struct Player {
     pub name: String,
@@ -13,6 +15,22 @@ pub enum Position {
     Defender,
     Midfielder,
     Forward,
+}
+
+pub fn print_best_player_awards(player_name: &str) {
+    let mut best_players: HashMap<String, Vec<i16>> = HashMap::new();
+    best_players.insert(String::from("Cristiano Ronaldo"), vec![2008, 2013]);
+    best_players.insert(String::from("Falcao"), vec![2012]);
+
+    if let Some(years) = best_players.get(player_name) {
+        let years: String = years
+            .iter()
+            .map(|year| year.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+
+        println!("{player_name} was the best player in the world in: {years}");
+    }
 }
 
 impl Player {
