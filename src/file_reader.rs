@@ -26,8 +26,8 @@ impl FileReader {
     }
 
     pub fn create_players(&self) -> Vec<Player> {
-        let file_content = self.players_file_reader();
-        let players: Vec<Player> = file_content
+        let players: Vec<Player> = self
+            .players_file_reader()
             .lines()
             .filter_map(Player::create_from_line)
             .collect();
