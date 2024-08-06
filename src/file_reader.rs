@@ -11,9 +11,7 @@ impl FileReader {
     fn players_file_reader(&self) -> String {
         let file_content = read_to_string(&self.filename).unwrap_or_else(|error| {
             if error.kind() == ErrorKind::NotFound {
-                File::create(&self.filename).unwrap_or_else(|error| {
-                    panic!("Problem creating the file: {error:?}");
-                });
+                File::create(&self.filename).expect("Failed to create file");
                 return String::from("");
             } else {
                 panic!("Problem opening the file: {error:?}");
