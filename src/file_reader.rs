@@ -9,18 +9,16 @@ pub struct FileReader {
 
 impl FileReader {
     fn players_file_reader(&self) -> String {
-        let file_content = match read_to_string(&self.filename) {
-            Ok(content) => content,
-            Err(error) => match error.kind() {
-                ErrorKind::NotFound => match File::create(&self.filename) {
-                    Ok(_fc) => String::from(""),
-                    Err(e) => panic!("Problem creating the file: {e:?}"),
-                },
-                other_error => {
-                    panic!("Problem opening the file: {other_error:?}");
-                }
-            },
-        };
+        let file_content = read_to_string(&self.filename).unwrap_or_else(|error| {
+            if error.kind() == ErrorKind::NotFound {
+                File::create(&self.filename).unwrap_or_else(|error| {
+                    panic!("Problem creating the file: {error:?}");
+                });
+                return String::from("");
+            } else {
+                panic!("Problem opening the file: {error:?}");
+            }
+        });
 
         file_content
     }
