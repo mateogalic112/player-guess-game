@@ -79,7 +79,7 @@ impl Player {
 }
 
 impl Player {
-    pub fn create_from_line(line: &str) -> Option<Self> {
+    pub fn new(line: &str) -> Option<Self> {
         let parts: Vec<&str> = line.split(" - ").collect();
 
         if parts.len() != 5 {

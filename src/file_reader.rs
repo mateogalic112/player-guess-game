@@ -25,7 +25,7 @@ impl FileReader {
         let players: Vec<Player> = self
             .players_file_reader()
             .lines()
-            .filter_map(Player::create_from_line)
+            .filter_map(Player::new)
             .collect();
 
         players
