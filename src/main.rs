@@ -1,4 +1,4 @@
-use std::io::{self};
+use std::{env, io};
 
 mod player;
 use crate::player::{print_best_player_awards, Player};
@@ -6,10 +6,18 @@ use crate::player::{print_best_player_awards, Player};
 mod file_reader;
 use crate::file_reader::FileReader;
 
+mod shortlist;
+use crate::shortlist::Shortlist;
+
 fn main() {
     let file_reader = FileReader {
         filename: "players.txt".to_string(),
     };
+
+    let args: Vec<String> = env::args().collect();
+
+    let shortlist = Shortlist::new(&args);
+    println!("Query: {}", shortlist.query);
 
     let mut players: Vec<Player> = file_reader.create_players();
 
