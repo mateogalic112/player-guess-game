@@ -1,3 +1,4 @@
+use std::process;
 use std::{env, io};
 
 mod player;
@@ -16,7 +17,10 @@ fn main() {
 
     let args: Vec<String> = env::args().collect();
 
-    let shortlist = Shortlist::new(&args);
+    let shortlist = Shortlist::build(&args).unwrap_or_else(|error| {
+        println!("Problem with parsing args: {error}");
+        process::exit(1);
+    });
     println!("Query: {}", shortlist.query);
 
     let mut players: Vec<Player> = file_reader.create_players();

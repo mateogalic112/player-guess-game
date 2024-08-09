@@ -3,9 +3,13 @@ pub struct Shortlist {
 }
 
 impl Shortlist {
-    pub fn new(args: &[String]) -> Shortlist {
+    pub fn build(args: &[String]) -> Result<Shortlist, &'static str> {
+        if args.len() < 2 {
+            return Err("Not enough arguments");
+        }
+
         let query = args[1].clone();
 
-        Shortlist { query }
+        Ok(Shortlist { query })
     }
 }
