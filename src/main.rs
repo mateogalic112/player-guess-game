@@ -38,13 +38,7 @@ fn main() {
 
         match Player::find_player_by_name(&game.players, &player_name_guess) {
             Some(player) => {
-                let club = &game
-                    .clubs
-                    .iter()
-                    .find(|club| club.squad.iter().any(|p| p.name == player.name))
-                    .unwrap();
-
-                println!("{}", player.player_info(club));
+                println!("{}", player.player_info(player.find_club(&game)));
 
                 if Player::is_oldest(&game.players, player) {
                     println!(

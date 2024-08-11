@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::club::Club;
+use crate::{club::Club, game::Game};
 
 #[derive(Debug)]
 pub struct Player {
@@ -49,9 +49,17 @@ impl Player {
     pub fn is_more_valued(&self, other: &Player) -> bool {
         self.market_value > other.market_value
     }
-}
 
-impl Player {
+    pub fn find_club<'a>(&'a self, game: &'a Game) -> &Club {
+        let club = &game
+            .clubs
+            .iter()
+            .find(|club| club.squad.iter().any(|p| p.name == self.name))
+            .unwrap();
+
+        club
+    }
+
     pub fn find_player_by_name<'a>(
         players: &'a Vec<Player>,
         input_name: &'a String,
