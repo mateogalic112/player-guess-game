@@ -1,4 +1,4 @@
-use crate::{club::Club, game::Game};
+use crate::club::Club;
 
 #[derive(Debug, Clone)]
 pub struct Player {
@@ -24,9 +24,8 @@ impl Player {
         )
     }
 
-    pub fn find_club<'a>(&'a self, game: &'a Game) -> &Club {
-        let club = &game
-            .clubs
+    pub fn find_club<'a>(&'a self, clubs: &'a Vec<Club>) -> &Club {
+        let club = &clubs
             .iter()
             .find(|club| club.squad.iter().any(|p| p.name == self.name))
             .unwrap();
@@ -36,7 +35,7 @@ impl Player {
 
     pub fn find_player_by_name<'a>(
         players: &'a Vec<Player>,
-        input_name: &'a String,
+        input_name: &'a &str,
     ) -> Option<&'a Player> {
         players
             .iter()
