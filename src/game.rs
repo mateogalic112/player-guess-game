@@ -11,7 +11,7 @@ pub struct Game {
 
 impl Game {
     pub fn start(&mut self) -> () {
-        let mut file = create_or_open_file(Game::get_text_file()).unwrap();
+        let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
 
         loop {
             println!("Input command: ");
@@ -27,7 +27,7 @@ impl Game {
             if input.starts_with(&["info"]) {
                 match self.get_info(&input) {
                     Ok(info) => {
-                        writeln!(file, "{}", info).unwrap();
+                        writeln!(game_file, "{}", info).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
@@ -39,7 +39,7 @@ impl Game {
             if input.starts_with(&["transfer"]) {
                 match self.transfer_player(&input) {
                     Ok(info) => {
-                        writeln!(file, "{}", info).unwrap();
+                        writeln!(game_file, "{}", info).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
