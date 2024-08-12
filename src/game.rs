@@ -1,7 +1,7 @@
-use std::io;
+use std::io::{self, Write};
 
 use crate::club::Club;
-use crate::file_reader::{create_clubs, create_players};
+use crate::file_reader::{create_clubs, create_or_open_file, create_players};
 use crate::player::Player;
 
 pub struct Game {
@@ -11,6 +11,8 @@ pub struct Game {
 
 impl Game {
     pub fn start(&mut self) -> () {
+        let mut file = create_or_open_file(Game::get_text_file()).unwrap();
+
         loop {
             println!("Input command: ");
 
@@ -25,7 +27,7 @@ impl Game {
             if input.starts_with(&["info"]) {
                 match self.get_info(&input) {
                     Ok(info) => {
-                        println!("{}", info);
+                        writeln!(file, "{}", info).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
@@ -36,7 +38,9 @@ impl Game {
             // ["transfer", "luka modric", "Liverpool", 40]
             if input.starts_with(&["transfer"]) {
                 match self.transfer_player(&input) {
-                    Ok(_) => (),
+                    Ok(info) => {
+                        writeln!(file, "{}", info).unwrap();
+                    }
                     Err(e) => {
                         println!("Error: {}", e);
                     }
@@ -77,7 +81,7 @@ impl Game {
     pub fn transfer_player(
         &mut self,
         input: &Vec<&str>,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+    ) -> Result<String, Box<dyn std::error::Error>> {
         if input.len() < 4 {
             panic!("Invalid args number");
         }
@@ -102,6 +106,8 @@ impl Game {
                     .find(|c| c.name.to_lowercase() == new_club_name.to_lowercase())
                     .unwrap();
 
+                let new_club_name = new_club.name.clone();
+
                 if new_club.name == current_club_name {
                     panic!("Player already in this club!")
                 }
@@ -112,11 +118,6 @@ impl Game {
 
                 new_club.buy_player(player, fee);
 
-                println!(
-                    "{} bought {} from {} for {} mil.",
-                    new_club.name, player.name, current_club_name, fee
-                );
-
                 let current_club = self
                     .clubs
                     .iter_mut()
@@ -125,11 +126,19 @@ impl Game {
 
                 current_club.sell_player(player, fee);
 
-                Ok(true)
+                Ok(format!(
+                    "{} bought {} from {} for {} mil.",
+                    new_club_name, player.name, current_club_name, fee
+                ))
             }
             None => {
                 panic!("Player not found, try again: ");
             }
         }
+    }
+
+    pub fn get_text_file() -> &'static str {
+        const GAME_FILE: &str = "game.txt";
+        GAME_FILE
     }
 }

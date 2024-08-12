@@ -1,4 +1,4 @@
-use std::fs::{read_to_string, File};
+use std::fs::{read_to_string, File, OpenOptions};
 use std::io::ErrorKind;
 
 use crate::club::Club;
@@ -33,4 +33,14 @@ pub fn create_clubs(filename: &str) -> Vec<Club> {
         .collect();
 
     clubs
+}
+
+pub fn create_or_open_file(filename: &str) -> Result<File, std::io::Error> {
+    let file = OpenOptions::new()
+        .write(true) // Open the file in write mode
+        .create(true) // Create the file if it does not exist
+        .append(true) // Append to the file if it exists
+        .open(filename)?; // Open or create the file
+
+    Ok(file)
 }
