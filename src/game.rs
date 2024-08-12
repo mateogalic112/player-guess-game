@@ -23,13 +23,7 @@ impl Game {
             let input: Vec<&str> = input.split(" - ").collect();
 
             if input.starts_with(&["info"]) {
-                match self.get_info(&input) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        println!("Error: {}", e);
-                        break;
-                    }
-                }
+                let _ = self.get_info(&input);
             }
 
             // ["transfer", "luka modric", "Liverpool", 40]
@@ -38,7 +32,6 @@ impl Game {
                     Ok(_) => (),
                     Err(e) => {
                         println!("Error: {}", e);
-                        break;
                     }
                 }
             }
@@ -101,6 +94,10 @@ impl Game {
                     .iter_mut()
                     .find(|c| c.name.to_lowercase() == new_club_name.to_lowercase())
                     .unwrap();
+
+                if new_club.name == current_club_name {
+                    panic!("Player already in this club!")
+                }
 
                 if new_club.transfer_budget < fee {
                     panic!("Not enough money!")
