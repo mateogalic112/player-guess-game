@@ -23,7 +23,14 @@ impl Game {
             let input: Vec<&str> = input.split(" - ").collect();
 
             if input.starts_with(&["info"]) {
-                let _ = self.get_info(&input);
+                match self.get_info(&input) {
+                    Ok(info) => {
+                        println!("{}", info);
+                    }
+                    Err(e) => {
+                        println!("Error: {}", e);
+                    }
+                }
             }
 
             // ["transfer", "luka modric", "Liverpool", 40]
