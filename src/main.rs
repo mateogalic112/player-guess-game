@@ -15,9 +15,7 @@ use game::Game;
 mod club;
 
 fn main() {
-    const PLAYERS_FILE: &str = "players.txt";
-
-    let game = Game::new(&PLAYERS_FILE);
+    let game: Game = Game::new();
 
     let args: Vec<String> = env::args().collect();
 

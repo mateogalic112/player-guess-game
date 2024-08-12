@@ -81,3 +81,47 @@ impl Player {
             .all(|other| other.name == player.name || player.is_more_valued(other))
     }
 }
+
+impl Player {
+    pub fn new(line: &str) -> Option<Self> {
+        let parts: Vec<&str> = line.split(" - ").collect();
+
+        if parts.len() != 4 {
+            return None;
+        }
+
+        let name = parts[0].trim().to_string();
+
+        let age = parts[1].trim().parse::<u8>();
+        let age = match age {
+            Ok(value) => value,
+            Err(_) => 0,
+        };
+
+        let position: Position = match parts[2].trim() {
+            "GK" => Position::Goalkeeper,
+            "CB" | "DL" | "DR" => Position::Defender,
+            "CM" | "DM" => Position::Midfielder,
+            "CF" | "ST" => Position::Forward,
+            _ => return None,
+        };
+
+        let market_value = parts[3].trim().parse::<u8>();
+        let market_value: u8 = match market_value {
+            Ok(value) => value,
+            Err(_) => 0,
+        };
+
+        Some(Player {
+            name,
+            age,
+            position,
+            market_value,
+        })
+    }
+
+    pub fn get_text_file() -> &'static str {
+        const PLAYERS_FILE: &str = "players.txt";
+        PLAYERS_FILE
+    }
+}

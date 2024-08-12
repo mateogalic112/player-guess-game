@@ -1,4 +1,4 @@
-Cristiano Ronaldo - 30 - ST - Real Madrid - 20
-Lionel Messi - 25 - CF - Barcelona - 50
-Luka Modric - 39 - CM - Real Madrid - 10
-Falcao - 25 - CF - Atletico Madrid - 100
+Cristiano Ronaldo - 30 - ST - 20
+Lionel Messi - 25 - CF - 50
+Luka Modric - 39 - CM - 10
+Falcao - 25 - CF - 100
