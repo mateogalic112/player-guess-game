@@ -2,3 +2,5 @@ Cristiano Ronaldo - 30 - ST - 20
 Lionel Messi - 25 - CF - 50
 Luka Modric - 39 - CM - 10
 Falcao - 25 - CF - 100
+Neymar - 23 - LW - 80
+Lukas Podolski - 30 - ST - 30

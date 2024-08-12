@@ -9,9 +9,14 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        Game {
-            clubs: create_clubs(Club::get_text_file()),
-            players: create_players(Player::get_text_file()),
+        let mut clubs = create_clubs(Club::get_text_file());
+        let players = create_players(Player::get_text_file());
+
+        for (index, player) in players.iter().enumerate() {
+            let club_index = index % clubs.len();
+            clubs[club_index].squad.push(player.clone());
         }
+
+        Game { clubs, players }
     }
 }
