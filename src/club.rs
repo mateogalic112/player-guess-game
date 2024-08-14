@@ -1,7 +1,20 @@
+use std::fmt;
+
 use crate::player::Player;
 
 pub enum Country {
     England,
+    Spain,
+}
+
+impl fmt::Display for Country {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let country_name = match self {
+            Country::England => "England",
+            Country::Spain => "Spain",
+        };
+        write!(f, "{}", country_name)
+    }
 }
 
 pub struct Club {
@@ -21,6 +34,7 @@ impl Club {
 
         let country: Country = match parts[0].trim() {
             "England" => Country::England,
+            "Spain" => Country::Spain,
             _ => return None,
         };
 

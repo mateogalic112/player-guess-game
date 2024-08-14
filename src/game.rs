@@ -1,6 +1,8 @@
 use std::io::{self, Write};
 
-use crate::club::Club;
+use inquire::{InquireError, Select};
+
+use crate::club::{Club, Country};
 use crate::file_reader::{create_clubs, create_or_open_file, create_players};
 use crate::player::Player;
 
@@ -12,6 +14,17 @@ pub struct Game {
 impl Game {
     pub fn start(&mut self) -> () {
         let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
+
+        let country_options: Vec<String> =
+            vec![Country::England.to_string(), Country::Spain.to_string()];
+
+        let country_ans: Result<String, InquireError> =
+            Select::new("Select club country?", country_options).prompt();
+
+        match country_ans {
+            Ok(choice) => println!("{}! That's mine too!", choice),
+            Err(_) => println!("There was an error, please try again"),
+        }
 
         loop {
             println!("Input command: ");
