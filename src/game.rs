@@ -26,6 +26,21 @@ impl Game {
             Err(_) => println!("There was an error, please try again"),
         }
 
+        let english_clubs = self
+            .clubs
+            .iter()
+            .filter(|c| c.country.to_string() == Country::England.to_string())
+            .map(|c| c.name.clone())
+            .collect::<Vec<String>>();
+
+        let english_clubs_ans: Result<String, InquireError> =
+            Select::new("Select club:", english_clubs).prompt();
+
+        match english_clubs_ans {
+            Ok(choice) => println!("{}! That's mine too!", choice),
+            Err(_) => println!("There was an error, please try again"),
+        }
+
         loop {
             println!("Input command: ");
 
