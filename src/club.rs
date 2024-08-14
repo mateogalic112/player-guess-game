@@ -40,28 +40,14 @@ impl Club {
         })
     }
 
-    pub fn sell_player(&mut self, player: &Player, fee: u16) -> Option<bool> {
-        match self.squad.iter().find(|p| p.name == player.name) {
-            Some(_) => (),
-            None => return None,
-        }
-
-        self.transfer_budget += fee;
+    pub fn sell_player(&mut self, player: &Player, fee: u16) -> () {
         self.squad.retain(|p| p.name != player.name);
-
-        Some(true)
+        self.transfer_budget += fee;
     }
 
-    pub fn buy_player(&mut self, player: &Player, fee: u16) -> Option<bool> {
-        match self.squad.iter().find(|p| p.name == player.name) {
-            Some(_) => return None,
-            None => (),
-        }
-
-        self.transfer_budget -= fee;
+    pub fn buy_player(&mut self, player: &Player, fee: u16) -> () {
         self.squad.push(player.clone());
-
-        Some(true)
+        self.transfer_budget -= fee;
     }
 
     pub fn get_text_file() -> &'static str {
