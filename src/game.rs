@@ -1,10 +1,9 @@
 use std::io::{self, Write};
 
-use inquire::{InquireError, Select};
-
-use crate::club::{Club, Country};
+use crate::club::Club;
 use crate::file_reader::{create_clubs, create_or_open_file, create_players};
 use crate::player::Player;
+use crate::setup::{select_club, select_country};
 
 pub struct Game {
     pub clubs: Vec<Club>,
@@ -15,31 +14,10 @@ impl Game {
     pub fn start(&mut self) -> () {
         let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
 
-        let country_options: Vec<String> =
-            vec![Country::England.to_string(), Country::Spain.to_string()];
+        let country = select_country().unwrap();
+        let club = select_club(country, &self.clubs).unwrap();
 
-        let country_ans: Result<String, InquireError> =
-            Select::new("Select club country?", country_options).prompt();
-
-        match country_ans {
-            Ok(choice) => println!("{}! That's mine too!", choice),
-            Err(_) => println!("There was an error, please try again"),
-        }
-
-        let english_clubs = self
-            .clubs
-            .iter()
-            .filter(|c| c.country.to_string() == Country::England.to_string())
-            .map(|c| c.name.clone())
-            .collect::<Vec<String>>();
-
-        let english_clubs_ans: Result<String, InquireError> =
-            Select::new("Select club:", english_clubs).prompt();
-
-        match english_clubs_ans {
-            Ok(choice) => println!("{}! That's mine too!", choice),
-            Err(_) => println!("There was an error, please try again"),
-        }
+        println!("Welcome to the game! You are now managing {}!", club.name);
 
         loop {
             println!("Input command: ");

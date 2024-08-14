@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::player::Player;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Country {
     England,
     Spain,
@@ -17,11 +18,18 @@ impl fmt::Display for Country {
     }
 }
 
+#[derive(Clone)]
 pub struct Club {
     pub country: Country,
     pub name: String,
     pub transfer_budget: u16,
     pub squad: Vec<Player>,
+}
+
+impl fmt::Display for Club {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.name)
+    }
 }
 
 impl Club {
