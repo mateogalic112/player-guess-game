@@ -1,9 +1,10 @@
+use std::borrow::BorrowMut;
 use std::io::{self, Write};
 
 use crate::club::Club;
 use crate::file_reader::{create_clubs, create_or_open_file, create_players};
 use crate::player::Player;
-use crate::setup::{select_club, select_country};
+use crate::setup::init;
 
 pub struct Game {
     pub clubs: Vec<Club>,
@@ -14,10 +15,7 @@ impl Game {
     pub fn start(&mut self) -> () {
         let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
 
-        let country = select_country().unwrap();
-        let club = select_club(country, &self.clubs).unwrap();
-
-        println!("Welcome to the game! You are now managing {}!", club.name);
+        let club = init(game_file.borrow_mut(), &self.clubs);
 
         loop {
             println!("Input command: ");
@@ -34,7 +32,6 @@ impl Game {
                 match self.get_player_info(&input) {
                     Ok(info) => {
                         println!("{}", info);
-                        writeln!(game_file, "{}", info).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
@@ -46,7 +43,6 @@ impl Game {
                 match self.get_squad_info(&input, &club) {
                     Ok(info) => {
                         println!("{}", info);
-                        writeln!(game_file, "{}", info).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
