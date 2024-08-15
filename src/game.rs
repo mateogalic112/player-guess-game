@@ -28,10 +28,22 @@ impl Game {
                 .read_line(&mut input)
                 .expect("Failed to read line");
 
-            let input: Vec<&str> = input.split(" - ").collect();
+            let input: Vec<&str> = input.trim().split(" - ").collect();
+            println!("{:?}", input);
 
-            if input.starts_with(&["info"]) {
-                match self.get_info(&input) {
+            if input.starts_with(&["info::player"]) {
+                match self.get_player_info(&input) {
+                    Ok(info) => {
+                        writeln!(game_file, "{}", info).unwrap();
+                    }
+                    Err(e) => {
+                        println!("Error: {}", e);
+                    }
+                }
+            }
+
+            if input.starts_with(&["info::squad"]) {
+                match self.get_squad_info(&input, &club) {
                     Ok(info) => {
                         writeln!(game_file, "{}", info).unwrap();
                     }
@@ -69,7 +81,7 @@ impl Game {
         Game { clubs, players }
     }
 
-    pub fn get_info(&self, input: &Vec<&str>) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn get_player_info(&self, input: &Vec<&str>) -> Result<String, Box<dyn std::error::Error>> {
         if input.len() < 2 {
             panic!("Invalid num of args");
         }
@@ -80,6 +92,38 @@ impl Game {
             Some(player) => Ok(player.player_info(player.find_club(&self.clubs))),
             None => {
                 panic!("Player not found, try again: ");
+            }
+        }
+    }
+
+    pub fn get_squad_info(
+        &self,
+        input: &Vec<&str>,
+        current_club: &Club,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let mut club_input = current_club.name.as_str();
+
+        if input.len() > 1 {
+            club_input = input[1].trim();
+        }
+
+        let club = self
+            .clubs
+            .iter()
+            .find(|c| c.name.to_lowercase() == club_input.to_lowercase().trim());
+
+        match club {
+            Some(club) => {
+                let mut squad_info = String::new();
+
+                // Print each player in the squad
+                for player in &club.squad {
+                    squad_info.push_str(&player.name);
+                }
+                Ok(squad_info)
+            }
+            None => {
+                panic!("Club not found, try again: ");
             }
         }
     }
