@@ -37,6 +37,7 @@ pub fn create_clubs(filename: &str) -> Vec<Club> {
 
 pub fn create_or_open_file(filename: &str) -> Result<File, std::io::Error> {
     let file = OpenOptions::new()
+        .read(true)
         .write(true) // Open the file in write mode
         .create(true) // Create the file if it does not exist
         .append(true) // Append to the file if it exists
