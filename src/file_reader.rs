@@ -4,7 +4,7 @@ use std::io::{BufReader, ErrorKind};
 use serde_json::Value;
 
 use crate::club::Club;
-use crate::game::GameState;
+use crate::game::{Game, GameState};
 use crate::player::Player;
 
 fn get_file_content(filename: &str) -> String {
@@ -51,7 +51,7 @@ pub fn create_or_open_file(filename: &str) -> Result<File, std::io::Error> {
 
 pub fn read_game_state() -> Result<GameState, std::io::Error> {
     // Open the file
-    let file = File::open("game.json")?;
+    let file = File::open(Game::get_json_file())?;
 
     // Create a buffered reader for efficient reading
     let reader = BufReader::new(file);
@@ -64,7 +64,7 @@ pub fn read_game_state() -> Result<GameState, std::io::Error> {
 
 pub fn update_game_state(json_data: &Value) -> Result<(), std::io::Error> {
     // Open the file
-    let file = OpenOptions::new().write(true).open("game.json")?;
+    let file = OpenOptions::new().write(true).open(Game::get_json_file())?;
 
     serde_json::to_writer_pretty(file, json_data)?;
 

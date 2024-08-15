@@ -21,7 +21,7 @@ impl Game {
     pub fn start(&mut self) -> () {
         let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
 
-        let club = init(&self.clubs);
+        let club = init(&mut game_file, self);
 
         loop {
             println!("Input command: ");
@@ -58,10 +58,10 @@ impl Game {
 
             // ["transfer", "luka modric", "Liverpool", 40]
             if input.starts_with(&["transfer"]) {
-                match self.transfer_player(&input) {
+                match self.transfer_player(&input.iter().skip(1).cloned().collect()) {
                     Ok(info) => {
                         println!("{}", info);
-                        writeln!(game_file, "transfer_player({})", input.join(", ")).unwrap();
+                        writeln!(game_file, "transfer_player({})", &input[1..].join(", ")).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
@@ -136,13 +136,15 @@ impl Game {
         &mut self,
         input: &Vec<&str>,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        if input.len() < 4 {
+        println!("{}", &input.join(", "));
+
+        if input.len() < 3 {
             panic!("Invalid args number");
         }
 
-        let player_name = input[1].trim();
-        let new_club_name = input[2].trim();
-        let fee: u16 = input[3].trim().parse::<u16>().unwrap();
+        let player_name = input[0].trim();
+        let new_club_name = input[1].trim();
+        let fee: u16 = input[2].trim().parse::<u16>().unwrap();
 
         match Player::find_player_by_name(&self.players, &player_name) {
             Some(player) => {
@@ -194,5 +196,10 @@ impl Game {
     pub fn get_text_file() -> &'static str {
         const GAME_FILE: &str = "game.txt";
         GAME_FILE
+    }
+
+    pub fn get_json_file() -> &'static str {
+        const GAME_JSON_FILE: &str = "game.json";
+        GAME_JSON_FILE
     }
 }
