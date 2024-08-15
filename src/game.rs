@@ -1,4 +1,4 @@
-use std::borrow::BorrowMut;
+use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
 use crate::club::Club;
@@ -11,11 +11,17 @@ pub struct Game {
     pub players: Vec<Player>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct GameState {
+    pub club: String,
+}
+
 impl Game {
     pub fn start(&mut self) -> () {
         let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
 
-        let club = init(game_file.borrow_mut(), &self.clubs);
+        let club = init(&self.clubs);
 
         loop {
             println!("Input command: ");
