@@ -136,8 +136,6 @@ impl Game {
         &mut self,
         input: &Vec<&str>,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        println!("{}", &input.join(", "));
-
         if input.len() < 3 {
             panic!("Invalid args number");
         }
