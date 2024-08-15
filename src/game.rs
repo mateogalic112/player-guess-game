@@ -29,11 +29,11 @@ impl Game {
                 .expect("Failed to read line");
 
             let input: Vec<&str> = input.trim().split(" - ").collect();
-            println!("{:?}", input);
 
             if input.starts_with(&["info::player"]) {
                 match self.get_player_info(&input) {
                     Ok(info) => {
+                        println!("{}", info);
                         writeln!(game_file, "{}", info).unwrap();
                     }
                     Err(e) => {
@@ -45,6 +45,7 @@ impl Game {
             if input.starts_with(&["info::squad"]) {
                 match self.get_squad_info(&input, &club) {
                     Ok(info) => {
+                        println!("{}", info);
                         writeln!(game_file, "{}", info).unwrap();
                     }
                     Err(e) => {
@@ -57,7 +58,8 @@ impl Game {
             if input.starts_with(&["transfer"]) {
                 match self.transfer_player(&input) {
                     Ok(info) => {
-                        writeln!(game_file, "{}", info).unwrap();
+                        println!("{}", info);
+                        writeln!(game_file, "transfer_player({})", input.join(", ")).unwrap();
                     }
                     Err(e) => {
                         println!("Error: {}", e);
@@ -118,7 +120,7 @@ impl Game {
 
                 // Print each player in the squad
                 for player in &club.squad {
-                    squad_info.push_str(&player.name);
+                    squad_info.push_str(&format!("{}\n", player.name));
                 }
                 Ok(squad_info)
             }
