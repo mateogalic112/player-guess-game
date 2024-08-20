@@ -1,11 +1,10 @@
 use std::fs::{read_to_string, File, OpenOptions};
 use std::io::{BufReader, ErrorKind};
+use std::str::FromStr;
 
 use serde_json::Value;
 
-use crate::club::Club;
 use crate::game::{Game, GameState};
-use crate::player::Player;
 
 fn get_file_content(filename: &str) -> String {
     let file_content = read_to_string(filename).unwrap_or_else(|error| {
@@ -20,22 +19,14 @@ fn get_file_content(filename: &str) -> String {
     file_content
 }
 
-pub fn create_players(filename: &str) -> Vec<Player> {
-    let players: Vec<Player> = get_file_content(filename)
+pub fn create_entities<T>(filename: &str) -> Vec<T>
+where
+    T: FromStr,
+{
+    get_file_content(filename)
         .lines()
-        .filter_map(Player::new)
-        .collect();
-
-    players
-}
-
-pub fn create_clubs(filename: &str) -> Vec<Club> {
-    let clubs = get_file_content(filename)
-        .lines()
-        .flat_map(str::parse)
-        .collect::<Vec<Club>>();
-
-    clubs
+        .filter_map(|line| line.parse::<T>().ok())
+        .collect()
 }
 
 pub fn create_or_open_file(filename: &str) -> Result<File, std::io::Error> {

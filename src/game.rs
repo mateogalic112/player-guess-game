@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
 use crate::club::Club;
-use crate::file_reader::{create_clubs, create_or_open_file, create_players};
+use crate::file_reader::{create_entities, create_or_open_file};
 use crate::player::Player;
 use crate::setup::init;
 
@@ -74,8 +74,8 @@ impl Game {
 
 impl Game {
     pub fn new() -> Game {
-        let mut clubs = create_clubs(Club::get_text_file());
-        let players = create_players(Player::get_text_file());
+        let mut clubs = create_entities::<Club>(Club::get_text_file());
+        let players = create_entities::<Player>(Player::get_text_file());
 
         for (index, player) in players.iter().enumerate() {
             let club_index = index % clubs.len();

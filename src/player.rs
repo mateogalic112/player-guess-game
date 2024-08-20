@@ -1,5 +1,8 @@
 use core::fmt;
-use std::fmt::{Display, Formatter};
+use std::{
+    fmt::{Display, Formatter},
+    str::FromStr,
+};
 
 use crate::club::Club;
 
@@ -54,12 +57,32 @@ impl Player {
     }
 }
 
-impl Player {
-    pub fn new(line: &str) -> Option<Self> {
+pub enum PlayerParseError {
+    InvalidFormat,
+    InvalidAge,
+    InvalidPosition,
+    InvalidMarketValue,
+}
+
+impl Display for PlayerParseError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            PlayerParseError::InvalidFormat => write!(f, "Invalid input format"),
+            PlayerParseError::InvalidAge => write!(f, "Invalid age"),
+            PlayerParseError::InvalidPosition => write!(f, "Invalid position"),
+            PlayerParseError::InvalidMarketValue => write!(f, "Invalid market value"),
+        }
+    }
+}
+
+impl FromStr for Player {
+    type Err = PlayerParseError;
+
+    fn from_str(line: &str) -> Result<Self, Self::Err> {
         let parts: Vec<&str> = line.split(" - ").collect();
 
         if parts.len() != 4 {
-            return None;
+            return Err(PlayerParseError::InvalidFormat);
         }
 
         let name = parts[0].trim().to_string();
@@ -67,7 +90,7 @@ impl Player {
         let age = parts[1].trim().parse::<u8>();
         let age = match age {
             Ok(value) => value,
-            Err(_) => 0,
+            Err(_) => return Err(PlayerParseError::InvalidAge),
         };
 
         let position: Position = match parts[2].trim() {
@@ -75,16 +98,16 @@ impl Player {
             "CB" | "DL" | "DR" => Position::Defender,
             "CM" | "DM" => Position::Midfielder,
             "LW" | "RW" | "CF" | "ST" => Position::Forward,
-            _ => return None,
+            _ => return Err(PlayerParseError::InvalidPosition),
         };
 
         let market_value = parts[3].trim().parse::<u8>();
         let market_value: u8 = match market_value {
             Ok(value) => value,
-            Err(_) => 0,
+            Err(_) => return Err(PlayerParseError::InvalidMarketValue),
         };
 
-        Some(Player {
+        Ok(Player {
             name,
             age,
             position,
