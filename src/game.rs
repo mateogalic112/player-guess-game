@@ -93,7 +93,7 @@ impl Game {
         let player: Option<&Player> = Player::find_player_by_name(&self.players, &input[1]);
 
         match player {
-            Some(player) => Ok(player.player_info(player.find_club(&self.clubs))),
+            Some(player) => Ok(format!("{player} - {}", player.find_club(&self.clubs).name)),
             None => {
                 panic!("Player not found, try again: ");
             }

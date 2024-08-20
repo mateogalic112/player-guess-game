@@ -1,3 +1,6 @@
+use core::fmt;
+use std::fmt::{Display, Formatter};
+
 use crate::club::Club;
 
 #[derive(Debug, Clone)]
@@ -6,6 +9,16 @@ pub struct Player {
     pub age: u8,
     pub position: Position,
     pub market_value: u8,
+}
+
+impl Display for Player {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{} - {} years - {:?} - {} mil",
+            self.name, self.age, self.position, self.market_value
+        )
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -17,13 +30,6 @@ pub enum Position {
 }
 
 impl Player {
-    pub fn player_info(&self, club: &Club) -> String {
-        format!(
-            "Player {} ({}, {:?}) plays for {}. Valued at: {} mil.",
-            self.name, self.age, self.position, club.name, self.market_value
-        )
-    }
-
     pub fn find_club<'a>(&'a self, clubs: &'a Vec<Club>) -> &Club {
         let club = &clubs
             .iter()
@@ -40,6 +46,11 @@ impl Player {
         players
             .iter()
             .find(|player| player.name.to_lowercase() == input_name.to_lowercase().trim())
+    }
+
+    pub fn get_text_file() -> &'static str {
+        const PLAYERS_FILE: &str = "players.txt";
+        PLAYERS_FILE
     }
 }
 
@@ -79,10 +90,5 @@ impl Player {
             position,
             market_value,
         })
-    }
-
-    pub fn get_text_file() -> &'static str {
-        const PLAYERS_FILE: &str = "players.txt";
-        PLAYERS_FILE
     }
 }
