@@ -30,10 +30,10 @@ pub fn create_players(filename: &str) -> Vec<Player> {
 }
 
 pub fn create_clubs(filename: &str) -> Vec<Club> {
-    let clubs: Vec<Club> = get_file_content(filename)
+    let clubs = get_file_content(filename)
         .lines()
-        .filter_map(Club::new)
-        .collect();
+        .flat_map(str::parse)
+        .collect::<Vec<Club>>();
 
     clubs
 }

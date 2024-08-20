@@ -4,7 +4,8 @@ use std::io::Read;
 use inquire::{InquireError, Select};
 use serde_json::json;
 
-use crate::club::{Club, Country};
+use crate::club::Club;
+use crate::country::Country;
 use crate::file_reader::{read_game_state, update_game_state};
 use crate::game::{Game, GameState};
 
