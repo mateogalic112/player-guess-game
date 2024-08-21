@@ -4,14 +4,12 @@ use std::{
 };
 
 use crate::country::Country;
-use crate::player::Player;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Club {
     pub country: Country,
     pub name: String,
     pub transfer_budget: u16,
-    pub squad: Vec<Player>,
 }
 
 impl Display for Club {
@@ -65,22 +63,11 @@ impl FromStr for Club {
             country,
             name,
             transfer_budget,
-            squad: Vec::new(),
         })
     }
 }
 
 impl Club {
-    pub fn sell_player(&mut self, player: &Player, fee: u16) -> () {
-        self.squad.retain(|p| p.name != player.name);
-        self.transfer_budget += fee;
-    }
-
-    pub fn buy_player(&mut self, player: &Player, fee: u16) -> () {
-        self.squad.push(player.clone());
-        self.transfer_budget -= fee;
-    }
-
     pub fn get_text_file() -> &'static str {
         const CLUBS_FILE: &str = "clubs.txt";
         CLUBS_FILE

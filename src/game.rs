@@ -35,25 +35,11 @@ impl Game {
             let input: Vec<&str> = input.trim().split(" - ").collect();
 
             if input.starts_with(&["info::player"]) {
-                match self.get_player_info(&input) {
-                    Ok(info) => {
-                        println!("{}", info);
-                    }
-                    Err(e) => {
-                        println!("Error: {}", e);
-                    }
-                }
+                println!("{}", self.get_player_info(&input));
             }
 
             if input.starts_with(&["info::squad"]) {
-                match self.get_squad_info(&input, &club) {
-                    Ok(info) => {
-                        println!("{}", info);
-                    }
-                    Err(e) => {
-                        println!("Error: {}", e);
-                    }
-                }
+                println!("{}", self.get_squad_info(&input, &club));
             }
 
             // ["transfer", "luka modric", "Liverpool", 40]
@@ -74,62 +60,49 @@ impl Game {
 
 impl Game {
     pub fn new() -> Game {
-        let mut clubs = create_entities::<Club>(Club::get_text_file());
-        let players = create_entities::<Player>(Player::get_text_file());
+        let clubs = create_entities::<Club>(Club::get_text_file());
+        let mut players = create_entities::<Player>(Player::get_text_file());
 
-        for (index, player) in players.iter().enumerate() {
+        for (index, player) in players.iter_mut().enumerate() {
             let club_index = index % clubs.len();
-            clubs[club_index].squad.push(player.clone());
+            player.club = Some(clubs[club_index].name.clone());
         }
 
         Game { clubs, players }
     }
 
-    pub fn get_player_info(&self, input: &Vec<&str>) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn get_player_info(&self, input: &Vec<&str>) -> String {
         if input.len() < 2 {
-            panic!("Invalid num of args");
+            return String::from("Invalid num of args");
         }
 
         let player: Option<&Player> = Player::find_player_by_name(&self.players, &input[1]);
 
         match player {
-            Some(player) => Ok(format!("{player} - {}", player.find_club(&self.clubs).name)),
-            None => {
-                panic!("Player not found, try again: ");
-            }
+            Some(player) => player.to_string(),
+            None => String::from("Player not found, try again: "),
         }
     }
 
-    pub fn get_squad_info(
-        &self,
-        input: &Vec<&str>,
-        current_club: &Club,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn get_squad_info(&self, input: &Vec<&str>, current_club: &Club) -> String {
         let mut club_input = current_club.name.as_str();
 
         if input.len() > 1 {
             club_input = input[1].trim();
         }
 
-        let club = self
-            .clubs
+        let mut squad_info = String::new();
+
+        // Print each player in the squad
+        for player in self
+            .players
             .iter()
-            .find(|c| c.name.to_lowercase() == club_input.to_lowercase().trim());
-
-        match club {
-            Some(club) => {
-                let mut squad_info = String::new();
-
-                // Print each player in the squad
-                for player in &club.squad {
-                    squad_info.push_str(&format!("{}\n", player.name));
-                }
-                Ok(squad_info)
-            }
-            None => {
-                panic!("Club not found, try again: ");
-            }
+            .filter(|p| p.club == Some(club_input.to_string()))
+        {
+            squad_info.push_str(&format!("{}\n", &player.name));
         }
+
+        squad_info
     }
 
     pub fn transfer_player(
@@ -149,26 +122,18 @@ impl Game {
             Err(_) => Err("Invalid fee".to_string())?,
         };
 
-        let player = Player::find_player_by_name(&self.players, &player_name)
+        let player = self
+            .players
+            .iter_mut()
+            .find(|player| player.name.eq_ignore_ascii_case(player_name))
             .ok_or_else(|| "Player not found")?;
 
-        let current_club = self
-            .clubs
-            .iter_mut()
-            .find(|club| {
-                club.squad
-                    .iter()
-                    .any(|p| p.name.eq_ignore_ascii_case(&player.name))
-            })
-            .ok_or_else(|| "Current club not found")?;
-
-        if current_club.name.eq_ignore_ascii_case(new_club_name) {
-            return Err("Player already in this club!".to_string())?;
+        match &player.club {
+            Some(club) if club.eq_ignore_ascii_case(new_club_name) => {
+                return Err("Player already in this club!".to_string())?;
+            }
+            _ => (),
         }
-
-        current_club.sell_player(player, fee);
-
-        let current_club_name = current_club.name.clone();
 
         let new_club = self
             .clubs
@@ -180,11 +145,22 @@ impl Game {
             return Err("Not enough money!".to_string())?;
         }
 
-        new_club.buy_player(player, fee);
+        new_club.transfer_budget -= fee;
+
+        let current_club = self
+            .clubs
+            .iter_mut()
+            .find(|club| {
+                club.name
+                    .eq_ignore_ascii_case(player.club.as_ref().unwrap().as_str())
+            })
+            .ok_or_else(|| "Current club not found")?;
+
+        current_club.transfer_budget += fee;
 
         Ok(format!(
             "{} bought {} from {} for {} mil.",
-            new_club_name, player.name, current_club_name, fee
+            new_club_name, player.name, current_club.name, fee
         ))
     }
 

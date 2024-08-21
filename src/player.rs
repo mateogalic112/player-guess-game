@@ -4,22 +4,25 @@ use std::{
     str::FromStr,
 };
 
-use crate::club::Club;
-
 #[derive(Debug, Clone)]
 pub struct Player {
     pub name: String,
     pub age: u8,
     pub position: Position,
     pub market_value: u8,
+    pub club: Option<String>,
 }
 
 impl Display for Player {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(
             f,
-            "{} - {} years - {:?} - {} mil",
-            self.name, self.age, self.position, self.market_value
+            "{} - {} years - {:?} - {} mil - {}",
+            self.name,
+            self.age,
+            self.position,
+            self.market_value,
+            self.club.as_deref().unwrap_or("Free agent")
         )
     }
 }
@@ -33,15 +36,6 @@ pub enum Position {
 }
 
 impl Player {
-    pub fn find_club<'a>(&'a self, clubs: &'a Vec<Club>) -> &Club {
-        let club = &clubs
-            .iter()
-            .find(|club| club.squad.iter().any(|p| p.name == self.name))
-            .unwrap();
-
-        club
-    }
-
     pub fn find_player_by_name<'a>(
         players: &'a Vec<Player>,
         input_name: &'a &str,
@@ -112,6 +106,7 @@ impl FromStr for Player {
             age,
             position,
             market_value,
+            club: None,
         })
     }
 }
