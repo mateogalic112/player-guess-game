@@ -152,7 +152,7 @@ impl Game {
         let player = Player::find_player_by_name(&self.players, &player_name)
             .ok_or_else(|| "Player not found")?;
 
-        let current_club_name = self
+        let current_club = self
             .clubs
             .iter_mut()
             .find(|club| {
@@ -160,9 +160,15 @@ impl Game {
                     .iter()
                     .any(|p| p.name.eq_ignore_ascii_case(&player.name))
             })
-            .ok_or_else(|| "Current club not found")?
-            .name
-            .clone();
+            .ok_or_else(|| "Current club not found")?;
+
+        if current_club.name.eq_ignore_ascii_case(new_club_name) {
+            return Err("Player already in this club!".to_string())?;
+        }
+
+        current_club.sell_player(player, fee);
+
+        let current_club_name = current_club.name.clone();
 
         let new_club = self
             .clubs
@@ -170,23 +176,11 @@ impl Game {
             .find(|club| club.name.eq_ignore_ascii_case(new_club_name))
             .ok_or_else(|| "New club not found")?;
 
-        if current_club_name.eq_ignore_ascii_case(new_club_name) {
-            return Err("Player already in this club!".to_string())?;
-        }
-
         if new_club.transfer_budget < fee {
             return Err("Not enough money!".to_string())?;
         }
 
         new_club.buy_player(player, fee);
-
-        let current_club = self
-            .clubs
-            .iter_mut()
-            .find(|club| club.name.eq_ignore_ascii_case(&current_club_name))
-            .ok_or_else(|| "Current club not found")?;
-
-        current_club.sell_player(player, fee);
 
         Ok(format!(
             "{} bought {} from {} for {} mil.",
