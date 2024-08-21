@@ -146,7 +146,7 @@ impl Game {
         let fee = input[2].trim().parse::<u16>();
         let fee = match fee {
             Ok(value) => value,
-            Err(_) => panic!("Invalid fee"),
+            Err(_) => Err("Invalid fee".to_string())?,
         };
 
         let player = Player::find_player_by_name(&self.players, &player_name)
@@ -164,18 +164,18 @@ impl Game {
             .name
             .clone();
 
-        if current_club_name.eq_ignore_ascii_case(new_club_name) {
-            return Err("Player already in this club!".to_string().into());
-        }
-
         let new_club = self
             .clubs
             .iter_mut()
             .find(|club| club.name.eq_ignore_ascii_case(new_club_name))
             .ok_or_else(|| "New club not found")?;
 
+        if current_club_name.eq_ignore_ascii_case(new_club_name) {
+            return Err("Player already in this club!".to_string())?;
+        }
+
         if new_club.transfer_budget < fee {
-            return Err("Not enough money!".to_string().into());
+            return Err("Not enough money!".to_string())?;
         }
 
         new_club.buy_player(player, fee);
