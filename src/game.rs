@@ -149,51 +149,49 @@ impl Game {
             Err(_) => panic!("Invalid fee"),
         };
 
-        match Player::find_player_by_name(&self.players, &player_name) {
-            Some(player) => {
-                let current_club_name = self
-                    .clubs
+        let player = Player::find_player_by_name(&self.players, &player_name)
+            .ok_or_else(|| "Player not found")?;
+
+        let current_club_name = self
+            .clubs
+            .iter_mut()
+            .find(|club| {
+                club.squad
                     .iter()
-                    .find(|c| c.squad.iter().any(|p| p.name == player.name))
-                    .unwrap()
-                    .name
-                    .clone();
+                    .any(|p| p.name.eq_ignore_ascii_case(&player.name))
+            })
+            .ok_or_else(|| "Current club not found")?
+            .name
+            .clone();
 
-                let new_club = self
-                    .clubs
-                    .iter_mut()
-                    .find(|c| c.name.to_lowercase() == new_club_name.to_lowercase())
-                    .unwrap();
-
-                let new_club_name = new_club.name.clone();
-
-                if new_club.name == current_club_name {
-                    panic!("Player already in this club!")
-                }
-
-                if new_club.transfer_budget < fee {
-                    panic!("Not enough money!")
-                }
-
-                new_club.buy_player(player, fee);
-
-                let current_club = self
-                    .clubs
-                    .iter_mut()
-                    .find(|c| c.name.to_lowercase() == current_club_name.to_lowercase().trim())
-                    .unwrap();
-
-                current_club.sell_player(player, fee);
-
-                Ok(format!(
-                    "{} bought {} from {} for {} mil.",
-                    new_club_name, player.name, current_club_name, fee
-                ))
-            }
-            None => {
-                panic!("Player not found, try again: ");
-            }
+        if current_club_name.eq_ignore_ascii_case(new_club_name) {
+            return Err("Player already in this club!".to_string().into());
         }
+
+        let new_club = self
+            .clubs
+            .iter_mut()
+            .find(|club| club.name.eq_ignore_ascii_case(new_club_name))
+            .ok_or_else(|| "New club not found")?;
+
+        if new_club.transfer_budget < fee {
+            return Err("Not enough money!".to_string().into());
+        }
+
+        new_club.buy_player(player, fee);
+
+        let current_club = self
+            .clubs
+            .iter_mut()
+            .find(|club| club.name.eq_ignore_ascii_case(&current_club_name))
+            .ok_or_else(|| "Current club not found")?;
+
+        current_club.sell_player(player, fee);
+
+        Ok(format!(
+            "{} bought {} from {} for {} mil.",
+            new_club_name, player.name, current_club_name, fee
+        ))
     }
 
     pub fn get_text_file() -> &'static str {
