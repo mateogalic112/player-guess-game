@@ -142,7 +142,12 @@ impl Game {
 
         let player_name = input[0].trim();
         let new_club_name = input[1].trim();
-        let fee: u16 = input[2].trim().parse::<u16>().unwrap();
+
+        let fee = input[2].trim().parse::<u16>();
+        let fee = match fee {
+            Ok(value) => value,
+            Err(_) => panic!("Invalid fee"),
+        };
 
         match Player::find_player_by_name(&self.players, &player_name) {
             Some(player) => {
