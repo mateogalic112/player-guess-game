@@ -6,7 +6,7 @@ use inquire::{InquireError, Select};
 use crate::club::Club;
 use crate::country::Country;
 use crate::file_reader::read_game_state;
-use crate::game::{Game, GameState};
+use crate::game::Game;
 
 fn select_country() -> Result<Country, InquireError> {
     Select::new("Select club country?", Country::all()).prompt()
@@ -20,8 +20,8 @@ fn select_club<'a>(country: Country, clubs: &'a Vec<Club>) -> Result<&'a Club, I
     .prompt()
 }
 
-pub fn init<'a>(game: &'a mut Game) -> Club {
-    let state = read_game_state().unwrap();
+pub fn init<'a>(game: &'a mut Game) -> Result<Club, Error> {
+    let state = read_game_state()?;
 
     match state.club.is_empty() {
         true => {
@@ -32,14 +32,17 @@ pub fn init<'a>(game: &'a mut Game) -> Club {
                 "Welcome to the game! You are now managing {}!",
                 selected_club.name
             );
-
-            selected_club.clone()
+            Ok(selected_club.clone())
         }
         false => {
-            let state: GameState = read_game_state().unwrap();
-            let selected_club = game.clubs.iter().find(|c| c.name == state.club).unwrap();
+            let selected_club = game
+                .clubs
+                .iter()
+                .find(|c| c.name == state.club)
+                .expect("Club not found!");
+
             println!("Welcome back! You are managing {}!", selected_club.name);
-            selected_club.clone()
+            Ok(selected_club.clone())
         }
     }
 }

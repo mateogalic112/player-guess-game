@@ -21,11 +21,10 @@ pub struct GameState {
 impl Game {
     pub fn start(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let mut game_file = create_or_open_file(Game::get_text_file())?;
-
         sync_game_state(&mut game_file, self)?;
 
-        let club = init(self);
-        update_game_state(&json!({"club": &club.name}))?;
+        let club = init(self)?;
+        update_game_state(&json!({"club": club.name}))?;
 
         loop {
             println!("Input command: ");
