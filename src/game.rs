@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::io::{self, Write};
 
 use crate::club::Club;
-use crate::file_reader::{create_entities, create_or_open_file};
+use crate::file_reader::{create_entities, create_or_open_file, update_game_state};
 use crate::player::Player;
 use crate::setup::{init, sync_game_state};
 
@@ -24,6 +25,7 @@ impl Game {
         sync_game_state(&mut game_file, self)?;
 
         let club = init(self);
+        update_game_state(&json!({"club": &club.name}))?;
 
         loop {
             println!("Input command: ");

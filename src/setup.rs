@@ -2,11 +2,10 @@ use std::fs::File;
 use std::io::{Error, Read};
 
 use inquire::{InquireError, Select};
-use serde_json::json;
 
 use crate::club::Club;
 use crate::country::Country;
-use crate::file_reader::{read_game_state, update_game_state};
+use crate::file_reader::read_game_state;
 use crate::game::{Game, GameState};
 
 fn select_country() -> Result<Country, InquireError> {
@@ -28,9 +27,6 @@ pub fn init<'a>(game: &'a mut Game) -> Club {
         true => {
             let country = select_country().expect("No country selected!");
             let selected_club = select_club(country, &game.clubs).expect("No club selected!");
-
-            update_game_state(&json!({"club": selected_club.name}))
-                .unwrap_or_else(|e| println!("e: {}", e));
 
             println!(
                 "Welcome to the game! You are now managing {}!",
