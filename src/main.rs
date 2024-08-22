@@ -7,7 +7,7 @@ mod setup;
 
 use game::Game;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut game = Game::new();
-    Game::start(&mut game).unwrap();
+    Ok(Game::start(&mut game)?)
 }
