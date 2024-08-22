@@ -15,3 +15,9 @@ impl Display for Country {
         write!(f, "{}", country_name)
     }
 }
+
+impl Country {
+    pub fn all() -> Vec<Country> {
+        vec![Country::England, Country::Spain]
+    }
+}

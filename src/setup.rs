@@ -9,22 +9,8 @@ use crate::country::Country;
 use crate::file_reader::{read_game_state, update_game_state};
 use crate::game::{Game, GameState};
 
-fn select_country() -> Option<Country> {
-    let country_options: Vec<Country> = vec![Country::England, Country::Spain];
-
-    let country_ans: Result<Country, InquireError> =
-        Select::new("Select club country?", country_options).prompt();
-
-    match country_ans {
-        Ok(choice) => {
-            println!("{}! That's mine too!", choice);
-            Some(choice)
-        }
-        Err(_) => {
-            println!("There was an error, please try again");
-            None
-        }
-    }
+fn select_country() -> Result<Country, InquireError> {
+    Select::new("Select club country?", Country::all()).prompt()
 }
 
 fn select_club(country: &Country, clubs: &Vec<Club>) -> Option<Club> {
@@ -62,8 +48,8 @@ pub fn init(game_file: &mut File, game: &mut Game) -> Club {
     let state = read_game_state().unwrap();
     let club: Club = match state.club.is_empty() {
         true => {
-            let country: Country = select_country().unwrap();
-            let selected_club = select_club(&country, &game.clubs).unwrap();
+            let country: Country = select_country().expect("No country selected!");
+            let selected_club = select_club(&country, &game.clubs).expect("No club selected!");
 
             update_game_state(&json!({"club": selected_club.name}))
                 .unwrap_or_else(|e| println!("e: {}", e));
