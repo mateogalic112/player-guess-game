@@ -57,6 +57,7 @@ pub fn update_game_state(json_data: &Value) -> Result<(), std::io::Error> {
     // Open the file
     let file = OpenOptions::new().write(true).open(Game::get_json_file())?;
 
+    // Write the JSON data to the file
     serde_json::to_writer_pretty(file, json_data)?;
 
     Ok(())
