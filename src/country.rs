@@ -1,5 +1,7 @@
 use std::fmt::{self, Display, Formatter};
 
+use crate::club::Club;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Country {
     England,
@@ -19,5 +21,9 @@ impl Display for Country {
 impl Country {
     pub fn all() -> Vec<Country> {
         vec![Country::England, Country::Spain]
+    }
+
+    pub fn get_clubs_from_country<'a>(country: Country, clubs: &'a Vec<Club>) -> Vec<&'a Club> {
+        clubs.iter().filter(|c| c.country == country).collect()
     }
 }

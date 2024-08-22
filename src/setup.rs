@@ -13,43 +13,26 @@ fn select_country() -> Result<Country, InquireError> {
     Select::new("Select club country?", Country::all()).prompt()
 }
 
-fn select_club(country: &Country, clubs: &Vec<Club>) -> Option<Club> {
-    let clubs = match country {
-        Country::England => clubs
-            .into_iter()
-            .filter(|c| c.country == Country::England)
-            .collect(),
-        Country::Spain => clubs
-            .into_iter()
-            .filter(|c| c.country == Country::Spain)
-            .collect(),
-    };
-
-    let clubs_ans: Result<&Club, InquireError> = Select::new("Select club:", clubs).prompt();
-
-    match clubs_ans {
-        Ok(choice) => {
-            println!("{}! That's mine too!", choice.name);
-            Some(choice.clone())
-        }
-        Err(_) => {
-            println!("There was an error, please try again");
-            None
-        }
-    }
+fn select_club<'a>(country: Country, clubs: &'a Vec<Club>) -> Result<&'a Club, InquireError> {
+    Select::new(
+        "Select club:",
+        Country::get_clubs_from_country(country, clubs),
+    )
+    .prompt()
 }
 
-pub fn init(game_file: &mut File, game: &mut Game) -> Club {
+pub fn init<'a>(game_file: &'a mut File, game: &'a mut Game) -> Club {
     let mut buf = String::new();
     game_file.read_to_string(&mut buf).unwrap();
 
     buf.lines().for_each(|line| execute_command(line, game));
 
     let state = read_game_state().unwrap();
-    let club: Club = match state.club.is_empty() {
+
+    match state.club.is_empty() {
         true => {
-            let country: Country = select_country().expect("No country selected!");
-            let selected_club = select_club(&country, &game.clubs).expect("No club selected!");
+            let country = select_country().expect("No country selected!");
+            let selected_club = select_club(country, &game.clubs).expect("No club selected!");
 
             update_game_state(&json!({"club": selected_club.name}))
                 .unwrap_or_else(|e| println!("e: {}", e));
@@ -59,22 +42,15 @@ pub fn init(game_file: &mut File, game: &mut Game) -> Club {
                 selected_club.name
             );
 
-            selected_club
+            selected_club.clone()
         }
         false => {
             let state: GameState = read_game_state().unwrap();
-            let selected_club = game
-                .clubs
-                .iter()
-                .find(|c| c.name == state.club)
-                .unwrap()
-                .clone();
+            let selected_club = game.clubs.iter().find(|c| c.name == state.club).unwrap();
             println!("Welcome back! You are managing {}!", selected_club.name);
-            selected_club
+            selected_club.clone()
         }
-    };
-
-    club
+    }
 }
 
 fn execute_command(command: &str, game: &mut Game) {
