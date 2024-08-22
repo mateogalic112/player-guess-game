@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::Read;
+use std::io::{Error, Read};
 
 use inquire::{InquireError, Select};
 use serde_json::json;
@@ -21,12 +21,7 @@ fn select_club<'a>(country: Country, clubs: &'a Vec<Club>) -> Result<&'a Club, I
     .prompt()
 }
 
-pub fn init<'a>(game_file: &'a mut File, game: &'a mut Game) -> Club {
-    let mut buf = String::new();
-    game_file.read_to_string(&mut buf).unwrap();
-
-    buf.lines().for_each(|line| execute_command(line, game));
-
+pub fn init<'a>(game: &'a mut Game) -> Club {
     let state = read_game_state().unwrap();
 
     match state.club.is_empty() {
@@ -51,6 +46,13 @@ pub fn init<'a>(game_file: &'a mut File, game: &'a mut Game) -> Club {
             selected_club.clone()
         }
     }
+}
+
+pub fn sync_game_state(game_file: &mut File, game: &mut Game) -> Result<(), Error> {
+    let mut buf = String::new();
+    game_file.read_to_string(&mut buf)?;
+    buf.lines().for_each(|line| execute_command(line, game));
+    Ok(())
 }
 
 fn execute_command(command: &str, game: &mut Game) {

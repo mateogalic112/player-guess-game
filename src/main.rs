@@ -9,5 +9,5 @@ use game::Game;
 
 fn main() {
     let mut game = Game::new();
-    Game::start(&mut game);
+    Game::start(&mut game).unwrap();
 }

@@ -4,7 +4,7 @@ use std::io::{self, Write};
 use crate::club::Club;
 use crate::file_reader::{create_entities, create_or_open_file};
 use crate::player::Player;
-use crate::setup::init;
+use crate::setup::{init, sync_game_state};
 
 pub struct Game {
     pub clubs: Vec<Club>,
@@ -18,10 +18,12 @@ pub struct GameState {
 }
 
 impl Game {
-    pub fn start(&mut self) -> () {
-        let mut game_file = create_or_open_file(Game::get_text_file()).unwrap();
+    pub fn start(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let mut game_file = create_or_open_file(Game::get_text_file())?;
 
-        let club = init(&mut game_file, self);
+        sync_game_state(&mut game_file, self)?;
+
+        let club = init(self);
 
         loop {
             println!("Input command: ");
