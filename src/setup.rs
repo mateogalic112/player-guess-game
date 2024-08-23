@@ -1,31 +1,27 @@
 use std::fs::File;
 use std::io::{self, Read};
 
-use inquire::{InquireError, Select};
+use inquire::Select;
 
 use crate::club::Club;
 use crate::country::Country;
 use crate::file_reader::read_game_state;
 use crate::game::Game;
 
-fn select_country() -> Result<Country, InquireError> {
-    Select::new("Select club country?", Country::all()).prompt()
-}
-
-fn select_club<'a>(country: Country, clubs: &'a Vec<Club>) -> Result<&'a Club, InquireError> {
-    Select::new(
-        "Select club:",
-        Country::get_clubs_from_country(country, clubs),
-    )
-    .prompt()
-}
-
 pub fn init(game: &mut Game) -> Result<Club, io::Error> {
     let state = read_game_state()?;
 
     if state.club.is_empty() {
-        let country = select_country().expect("No country selected!");
-        let selected_club = select_club(country, &game.clubs).expect("No club selected!");
+        let country = Select::new("Select club country", Country::all())
+            .prompt()
+            .expect("No country selected!");
+
+        let selected_club = Select::new(
+            "Select club:",
+            Country::get_clubs_from_country(country, &game.clubs),
+        )
+        .prompt()
+        .expect("No club selected!");
 
         println!(
             "Welcome to the game! You are now managing {}!",
