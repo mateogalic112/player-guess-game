@@ -20,7 +20,7 @@ fn select_club<'a>(country: Country, clubs: &'a Vec<Club>) -> Result<&'a Club, I
     .prompt()
 }
 
-pub fn init<'a>(game: &'a mut Game) -> Result<Club, Error> {
+pub fn init(game: &mut Game) -> Result<Club, Error> {
     let state = read_game_state()?;
 
     match state.club.is_empty() {
