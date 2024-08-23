@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{Error, Read};
+use std::io::{self, Read};
 
 use inquire::{InquireError, Select};
 
@@ -20,34 +20,31 @@ fn select_club<'a>(country: Country, clubs: &'a Vec<Club>) -> Result<&'a Club, I
     .prompt()
 }
 
-pub fn init(game: &mut Game) -> Result<Club, Error> {
+pub fn init(game: &mut Game) -> Result<Club, io::Error> {
     let state = read_game_state()?;
 
-    match state.club.is_empty() {
-        true => {
-            let country = select_country().expect("No country selected!");
-            let selected_club = select_club(country, &game.clubs).expect("No club selected!");
+    if state.club.is_empty() {
+        let country = select_country().expect("No country selected!");
+        let selected_club = select_club(country, &game.clubs).expect("No club selected!");
 
-            println!(
-                "Welcome to the game! You are now managing {}!",
-                selected_club.name
-            );
-            Ok(selected_club.clone())
-        }
-        false => {
-            let selected_club = game
-                .clubs
-                .iter()
-                .find(|c| c.name == state.club)
-                .expect("Club not found!");
+        println!(
+            "Welcome to the game! You are now managing {}!",
+            selected_club.name
+        );
+        Ok(selected_club.clone())
+    } else {
+        let selected_club = game
+            .clubs
+            .iter()
+            .find(|c| c.name == state.club)
+            .expect("Club not found!");
 
-            println!("Welcome back! You are managing {}!", selected_club.name);
-            Ok(selected_club.clone())
-        }
+        println!("Welcome back! You are managing {}!", selected_club.name);
+        Ok(selected_club.clone())
     }
 }
 
-pub fn sync_game_state(game_file: &mut File, game: &mut Game) -> Result<(), Error> {
+pub fn sync_game_state(game_file: &mut File, game: &mut Game) -> Result<(), io::Error> {
     let mut buf = String::new();
     game_file.read_to_string(&mut buf)?;
     buf.lines().for_each(|line| execute_command(line, game));
