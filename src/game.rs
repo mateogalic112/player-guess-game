@@ -48,8 +48,8 @@ impl Game {
             // ["transfer", "luka modric", "Liverpool", 40]
             if input.starts_with(&["transfer"]) {
                 match self.transfer_player(&input[1..].to_vec()) {
-                    Ok(info) => {
-                        println!("{}", info);
+                    Ok(transfer_info) => {
+                        println!("{}", transfer_info);
                         writeln!(game_file, "transfer_player({})", &input[1..].join(", "))?;
                     }
                     Err(e) => {
@@ -79,9 +79,7 @@ impl Game {
             return String::from("Invalid num of args");
         }
 
-        let player: Option<&Player> = Player::find_player_by_name(&self.players, &input[1]);
-
-        match player {
+        match Player::find_player_by_name(&self.players, &input[1]) {
             Some(player) => player.to_string(),
             None => String::from("Player not found, try again: "),
         }
@@ -97,12 +95,12 @@ impl Game {
         // Print each player in the squad
         self.players
             .iter()
-            .filter_map(|p| {
+            .filter(|p| {
                 p.club
-                    .as_ref()
-                    .filter(|club| club.eq_ignore_ascii_case(club_input))
-                    .map(|_| p.to_string())
+                    .as_deref()
+                    .map_or(false, |club| club.eq_ignore_ascii_case(club_input))
             })
+            .map(|p| p.to_string())
             .collect::<Vec<String>>()
             .join("\n")
     }
