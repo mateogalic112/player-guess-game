@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use crate::club::Club;
 use crate::file_reader::{create_entities, create_or_open_file, update_game_state};
 use crate::player::Player;
-use crate::setup::{init, sync_game_state};
+use crate::setup::{capitalize, init, sync_game_state};
 
 pub struct Game {
     pub clubs: Vec<Club>,
@@ -114,7 +114,7 @@ impl Game {
         }
 
         let player_name = input[0].trim();
-        let new_club_name = input[1].trim();
+        let new_club_name = capitalize(input[1].trim());
 
         let fee: u16 = input[2]
             .trim()
@@ -128,7 +128,7 @@ impl Game {
             .ok_or("Player not found")?;
 
         if let Some(club) = &player.club {
-            if club.eq_ignore_ascii_case(new_club_name) {
+            if club.eq_ignore_ascii_case(&new_club_name) {
                 return Err(String::from("Player is already in this club!"));
             }
         }
@@ -136,7 +136,7 @@ impl Game {
         let new_club = self
             .clubs
             .iter_mut()
-            .find(|club| club.name.eq_ignore_ascii_case(new_club_name))
+            .find(|club| club.name.eq_ignore_ascii_case(&new_club_name))
             .ok_or("New club not found")?;
 
         if new_club.transfer_budget < fee {
@@ -155,7 +155,7 @@ impl Game {
 
         current_club.transfer_budget += fee;
 
-        player.club = Some(new_club_name.to_string());
+        player.club = Some(new_club_name.clone());
 
         Ok(format!(
             "{} bought {} from {} for {} mil.",
