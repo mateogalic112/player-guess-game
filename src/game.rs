@@ -19,7 +19,7 @@ pub struct GameState {
 }
 
 impl Game {
-    pub fn start(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn start(&mut self) -> Result<(), io::Error> {
         let mut game_file = create_or_open_file(Game::get_text_file())?;
         sync_game_state(&mut game_file, self)?;
 
