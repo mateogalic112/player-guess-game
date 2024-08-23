@@ -23,8 +23,8 @@ impl Game {
         let mut game_file = create_or_open_file(Game::get_text_file())?;
         sync_game_state(&mut game_file, self)?;
 
-        let club = init(self)?;
-        update_game_state(&json!({"club": club.name}))?;
+        let selected_club = init(self)?;
+        update_game_state(&json!({"club": selected_club}))?;
 
         loop {
             println!("Input command: ");
@@ -42,7 +42,7 @@ impl Game {
             }
 
             if input.starts_with(&["info::squad"]) {
-                println!("{}", self.get_squad_info(&input, &club));
+                println!("{}", self.get_squad_info(&input, &selected_club));
             }
 
             // ["transfer", "luka modric", "Liverpool", 40]
@@ -87,25 +87,24 @@ impl Game {
         }
     }
 
-    pub fn get_squad_info(&self, input: &Vec<&str>, current_club: &Club) -> String {
-        let mut club_input = current_club.name.as_str();
+    pub fn get_squad_info(&self, input: &Vec<&str>, current_club: &str) -> String {
+        let mut club_input = current_club;
 
         if input.len() > 1 {
             club_input = input[1].trim();
         }
 
-        let mut squad_info = String::new();
-
         // Print each player in the squad
-        for player in self
-            .players
+        self.players
             .iter()
-            .filter(|p| p.club == Some(club_input.to_string()))
-        {
-            squad_info.push_str(&format!("{}\n", &player.name));
-        }
-
-        squad_info
+            .filter_map(|p| {
+                p.club
+                    .as_ref()
+                    .filter(|club| club.eq_ignore_ascii_case(club_input))
+                    .map(|_| p.to_string())
+            })
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 
     pub fn transfer_player(&mut self, input: &Vec<&str>) -> Result<String, String> {

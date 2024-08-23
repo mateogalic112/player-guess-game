@@ -3,12 +3,11 @@ use std::io::{self, Read};
 
 use inquire::Select;
 
-use crate::club::Club;
 use crate::country::Country;
 use crate::file_reader::read_game_state;
 use crate::game::Game;
 
-pub fn init(game: &mut Game) -> Result<Club, io::Error> {
+pub fn init(game: &mut Game) -> Result<String, io::Error> {
     let state = read_game_state()?;
 
     if state.club.is_empty() {
@@ -18,25 +17,27 @@ pub fn init(game: &mut Game) -> Result<Club, io::Error> {
 
         let selected_club = Select::new(
             "Select club:",
-            Country::get_clubs_from_country(country, &game.clubs),
+            game.clubs
+                .iter()
+                .filter(|c| c.country == country)
+                .map(|c| c.name.clone())
+                .collect(),
         )
         .prompt()
         .expect("No club selected!");
 
-        println!(
-            "Welcome to the game! You are now managing {}!",
-            selected_club.name
-        );
-        Ok(selected_club.clone())
+        println!("Welcome to the game! You are managing {}!", selected_club);
+        Ok(selected_club)
     } else {
         let selected_club = game
             .clubs
             .iter()
             .find(|c| c.name == state.club)
+            .map(|c| c.name.clone()) // Clone the name to return an owned String
             .expect("Club not found!");
 
-        println!("Welcome back! You are managing {}!", selected_club.name);
-        Ok(selected_club.clone())
+        println!("Welcome back! You are managing {}!", selected_club);
+        Ok(selected_club)
     }
 }
 
