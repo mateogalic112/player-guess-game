@@ -33,7 +33,7 @@ pub fn init(game: &mut Game) -> Result<String, io::Error> {
             .clubs
             .iter()
             .find(|c| c.name == state.club)
-            .map(|c| c.name.clone()) // Clone the name to return an owned String
+            .map(|c| c.name.clone())
             .expect("Club not found!");
 
         println!("Welcome back! You are managing {}!", selected_club);
