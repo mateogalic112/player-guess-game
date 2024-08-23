@@ -36,15 +36,6 @@ pub enum Position {
 }
 
 impl Player {
-    pub fn find_player_by_name<'a>(
-        players: &'a Vec<Player>,
-        input_name: &'a &str,
-    ) -> Option<&'a Player> {
-        players
-            .iter()
-            .find(|player| player.name.to_lowercase() == input_name.to_lowercase().trim())
-    }
-
     pub fn get_text_file() -> &'static str {
         const PLAYERS_FILE: &str = "players.txt";
         PLAYERS_FILE

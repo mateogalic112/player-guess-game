@@ -79,7 +79,11 @@ impl Game {
             return String::from("Invalid num of args");
         }
 
-        match Player::find_player_by_name(&self.players, &input[1]) {
+        match &self
+            .players
+            .iter()
+            .find(|player| player.name.eq_ignore_ascii_case(input[1].trim()))
+        {
             Some(player) => player.to_string(),
             None => String::from("Player not found, try again: "),
         }
