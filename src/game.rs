@@ -50,7 +50,7 @@ impl Game {
                 match self.transfer_player(&input.iter().skip(1).cloned().collect()) {
                     Ok(info) => {
                         println!("{}", info);
-                        writeln!(game_file, "transfer_player({})", &input[1..].join(", ")).unwrap();
+                        writeln!(game_file, "transfer_player({})", &input[1..].join(", "))?;
                     }
                     Err(e) => {
                         println!("Error: {}", e);
@@ -108,58 +108,54 @@ impl Game {
         squad_info
     }
 
-    pub fn transfer_player(
-        &mut self,
-        input: &Vec<&str>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn transfer_player(&mut self, input: &Vec<&str>) -> Result<String, String> {
         if input.len() < 3 {
-            panic!("Invalid args number");
+            return Err(String::from("Invalid args number"));
         }
 
         let player_name = input[0].trim();
         let new_club_name = input[1].trim();
 
-        let fee = input[2].trim().parse::<u16>();
-        let fee = match fee {
-            Ok(value) => value,
-            Err(_) => Err("Invalid fee".to_string())?,
-        };
+        let fee: u16 = input[2]
+            .trim()
+            .parse()
+            .map_err(|_| "Invalid fee. Fee must be a positive integer.")?;
 
         let player = self
             .players
             .iter_mut()
             .find(|player| player.name.eq_ignore_ascii_case(player_name))
-            .ok_or_else(|| "Player not found")?;
+            .ok_or("Player not found")?;
 
-        match &player.club {
-            Some(club) if club.eq_ignore_ascii_case(new_club_name) => {
-                return Err("Player already in this club!".to_string())?;
+        if let Some(club) = &player.club {
+            if club.eq_ignore_ascii_case(new_club_name) {
+                return Err(String::from("Player is already in this club!"));
             }
-            _ => (),
         }
 
         let new_club = self
             .clubs
             .iter_mut()
             .find(|club| club.name.eq_ignore_ascii_case(new_club_name))
-            .ok_or_else(|| "New club not found")?;
+            .ok_or("New club not found")?;
 
         if new_club.transfer_budget < fee {
-            return Err("Not enough money!".to_string())?;
+            return Err("Not enough money!")?;
         }
 
         new_club.transfer_budget -= fee;
 
+        let current_club_name = player.club.as_deref().ok_or("Player must have a club")?;
+
         let current_club = self
             .clubs
             .iter_mut()
-            .find(|club| {
-                club.name
-                    .eq_ignore_ascii_case(player.club.as_ref().unwrap().as_str())
-            })
-            .ok_or_else(|| "Current club not found")?;
+            .find(|club| club.name.eq_ignore_ascii_case(current_club_name))
+            .ok_or("Current club not found")?;
 
         current_club.transfer_budget += fee;
+
+        player.club = Some(new_club_name.to_string());
 
         Ok(format!(
             "{} bought {} from {} for {} mil.",

@@ -62,7 +62,7 @@ fn execute_command(command: &str, game: &mut Game) {
             .trim_end_matches(')');
         let args: Vec<&str> = args_str.split(',').map(|s| s.trim()).collect();
 
-        game.transfer_player(&args).unwrap();
+        game.transfer_player(&args).unwrap_or_else(|err| err);
     } else {
         eprintln!("Invalid command: {}", command);
     }
