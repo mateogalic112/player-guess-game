@@ -81,11 +81,10 @@ impl FromStr for Player {
 
         let name = parts[0].trim().to_string();
 
-        let age = parts[1].trim().parse::<u8>();
-        let age = match age {
-            Ok(value) => value,
-            Err(_) => return Err(PlayerParseError::InvalidAge),
-        };
+        let age = parts[1]
+            .trim()
+            .parse::<u8>()
+            .map_err(|_| PlayerParseError::InvalidAge)?;
 
         let position: Position = match parts[2].trim() {
             "GK" => Position::Goalkeeper,
@@ -95,11 +94,10 @@ impl FromStr for Player {
             _ => return Err(PlayerParseError::InvalidPosition),
         };
 
-        let market_value = parts[3].trim().parse::<u8>();
-        let market_value: u8 = match market_value {
-            Ok(value) => value,
-            Err(_) => return Err(PlayerParseError::InvalidMarketValue),
-        };
+        let market_value = parts[3]
+            .trim()
+            .parse::<u8>()
+            .map_err(|_| PlayerParseError::InvalidMarketValue)?;
 
         Ok(Player {
             name,

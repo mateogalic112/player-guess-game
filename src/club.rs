@@ -53,11 +53,10 @@ impl FromStr for Club {
 
         let name = parts[1].trim().to_string();
 
-        let transfer_budget = parts[2].trim().parse::<u16>();
-        let transfer_budget: u16 = match transfer_budget {
-            Ok(value) => value,
-            Err(_) => return Err(ClubParseError::InvalidBudget),
-        };
+        let transfer_budget = parts[2]
+            .trim()
+            .parse::<u16>()
+            .map_err(|_| ClubParseError::InvalidBudget)?;
 
         Ok(Club {
             country,

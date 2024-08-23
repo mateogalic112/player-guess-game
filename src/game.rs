@@ -116,9 +116,9 @@ impl Game {
         let player_name = input[0].trim();
         let new_club_name = capitalize(input[1].trim());
 
-        let fee: u16 = input[2]
+        let fee = input[2]
             .trim()
-            .parse()
+            .parse::<u16>()
             .map_err(|_| "Invalid fee. Fee must be a positive integer.")?;
 
         let player = self
