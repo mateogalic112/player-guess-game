@@ -24,6 +24,7 @@ impl Game {
         sync_game_state(&mut game_file, self)?;
 
         let club = init(self)?;
+        self.clubs.retain(|c| c.name == club.name);
         update_game_state(&json!({"club": club.name}))?;
 
         loop {
