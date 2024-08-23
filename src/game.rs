@@ -24,7 +24,6 @@ impl Game {
         sync_game_state(&mut game_file, self)?;
 
         let club = init(self)?;
-        self.clubs.retain(|c| c.name == club.name);
         update_game_state(&json!({"club": club.name}))?;
 
         loop {
@@ -36,7 +35,7 @@ impl Game {
                 .read_line(&mut input)
                 .expect("Failed to read line");
 
-            let input: Vec<&str> = input.trim().split(" - ").collect();
+            let input = input.trim().split(" - ").collect::<Vec<&str>>();
 
             if input.starts_with(&["info::player"]) {
                 println!("{}", self.get_player_info(&input));
@@ -48,7 +47,7 @@ impl Game {
 
             // ["transfer", "luka modric", "Liverpool", 40]
             if input.starts_with(&["transfer"]) {
-                match self.transfer_player(&input.iter().skip(1).cloned().collect()) {
+                match self.transfer_player(&input[1..].to_vec()) {
                     Ok(info) => {
                         println!("{}", info);
                         writeln!(game_file, "transfer_player({})", &input[1..].join(", "))?;
