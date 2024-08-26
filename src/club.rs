@@ -39,7 +39,7 @@ impl FromStr for Club {
     type Err = ClubParseError;
 
     fn from_str(line: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = line.split(" - ").collect();
+        let parts = line.split(" - ").collect::<Vec<_>>();
 
         if parts.len() != 3 {
             return Err(ClubParseError::InvalidFormat);

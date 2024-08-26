@@ -64,7 +64,7 @@ impl FromStr for Player {
     type Err = PlayerParseError;
 
     fn from_str(line: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = line.split(" - ").collect();
+        let parts = line.split(" - ").collect::<Vec<_>>();
 
         if parts.len() != 4 {
             return Err(PlayerParseError::InvalidFormat);

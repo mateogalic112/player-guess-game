@@ -35,7 +35,7 @@ impl Game {
                 .read_line(&mut input)
                 .expect("Failed to read line");
 
-            let input = input.trim().split(" - ").collect::<Vec<&str>>();
+            let input = input.trim().split(" - ").collect::<Vec<_>>();
 
             if input.starts_with(&["info::player"]) {
                 println!("{}", self.get_player_info(&input));
@@ -105,7 +105,7 @@ impl Game {
                     .map_or(false, |club| club.eq_ignore_ascii_case(club_input))
             })
             .map(|p| p.to_string())
-            .collect::<Vec<String>>()
+            .collect::<Vec<_>>()
             .join("\n")
     }
 
