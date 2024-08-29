@@ -1,5 +1,5 @@
 use std::fs::{read_to_string, File, OpenOptions};
-use std::io::{BufReader, ErrorKind};
+use std::io::{BufReader, ErrorKind, Result};
 use std::str::FromStr;
 
 use serde_json::Value;
@@ -29,7 +29,7 @@ where
         .collect()
 }
 
-pub fn create_or_open_file(filename: &str) -> Result<File, std::io::Error> {
+pub fn create_or_open_file(filename: &str) -> Result<File> {
     let file = OpenOptions::new()
         .read(true)
         .write(true) // Open the file in write mode
@@ -40,7 +40,7 @@ pub fn create_or_open_file(filename: &str) -> Result<File, std::io::Error> {
     Ok(file)
 }
 
-pub fn read_game_state() -> Result<GameState, std::io::Error> {
+pub fn read_game_state() -> Result<GameState> {
     // Open the file
     let file = File::open(Game::get_json_file())?;
 
@@ -53,7 +53,7 @@ pub fn read_game_state() -> Result<GameState, std::io::Error> {
     Ok(state)
 }
 
-pub fn update_game_state(json_data: &Value) -> Result<(), std::io::Error> {
+pub fn update_game_state(json_data: &Value) -> Result<()> {
     // Open the file
     let file = OpenOptions::new().write(true).open(Game::get_json_file())?;
 
