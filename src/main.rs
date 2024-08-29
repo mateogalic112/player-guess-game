@@ -5,11 +5,11 @@ mod game;
 mod player;
 mod setup;
 
-use std::io;
+use std::io::Result;
 
 use game::Game;
 
-fn main() -> Result<(), io::Error> {
+fn main() -> Result<()> {
     let mut game = Game::new();
     Ok(Game::start(&mut game)?)
 }

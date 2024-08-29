@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, Read};
+use std::io::{Read, Result};
 
 use inquire::Select;
 
@@ -7,7 +7,7 @@ use crate::country::Country;
 use crate::file_reader::read_game_state;
 use crate::game::Game;
 
-pub fn init(game: &mut Game) -> Result<String, io::Error> {
+pub fn init(game: &mut Game) -> Result<String> {
     let state = read_game_state()?;
 
     if state.club.is_empty() {
@@ -41,7 +41,7 @@ pub fn init(game: &mut Game) -> Result<String, io::Error> {
     }
 }
 
-pub fn sync_game_state(game_file: &mut File, game: &mut Game) -> Result<(), io::Error> {
+pub fn sync_game_state(game_file: &mut File, game: &mut Game) -> Result<()> {
     let mut buf = String::new();
     game_file.read_to_string(&mut buf)?;
     buf.lines().for_each(|line| execute_command(line, game));
